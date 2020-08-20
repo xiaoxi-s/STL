@@ -7,6 +7,13 @@
 #include <iostream>
 #include <new>  // for placement new
 
+/**
+ * All credits for STL Annotated Sources by Jie Hou.
+ * 
+ * @author Xiaoxi Sun
+ **/
+
+
 namespace sup {
 
 template <class T>
