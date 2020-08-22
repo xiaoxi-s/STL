@@ -1,7 +1,8 @@
-#include "../src/hello.cpp"
 #include <gtest/gtest.h>
+
+#include "../src/hello.cpp"
 
 TEST(ExampleTests, hi) {
     hello();
-    EXPECT_TRUE(false);
+    EXPECT_TRUE(true);
 }

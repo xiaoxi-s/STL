@@ -2,6 +2,17 @@
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "files.associations": {
         "cstddef": "cpp",
-        "memory_resource": "cpp"
+        "memory_resource": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "iterator": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp"
     }
 }

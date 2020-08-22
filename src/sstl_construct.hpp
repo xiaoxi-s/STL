@@ -1,6 +1,6 @@
 #ifdef _SSTL_CONSTRUCT_H
 #define _SSTL_CONSTRUCT_H
-#include <new.h>  // to use placement new
+#include <new>  // to use placement new
 
 /**
  * All credits for STL Annotated Sources by Jie Hou.
@@ -16,7 +16,7 @@ namespace sup {
  * @param T1
  * @param T2
  **/
-template <typename T1, typename T2>
+template <class T1, class T2>
 inline void construct(T1* p, const T2& value) {
   new (p) T1(value);  // placement new
 }
@@ -27,7 +27,7 @@ inline void construct(T1* p, const T2& value) {
  *
  * @param pointer the pointer to the object being destoryed
  **/
-template <typename T>
+template <class T>
 inline void destory(T* pointer) {
   pointer->~T();
 }
@@ -38,7 +38,7 @@ inline void destory(T* pointer) {
  * @param first the first object being destoryed
  * @param last the first object that will not be destoryed after first
  **/
-template <typename ForwardIterator, typename T>
+template <class ForwardIterator, class T>
 inline void destory(ForwardIterator first, ForwardIterator last) {
   // use __type_traits<T> to determine the existence of the trivial destructor
   // of such type.
@@ -56,7 +56,7 @@ inline void destory(ForwardIterator first, ForwardIterator last) {
  * @param __false_type - denoting only the type rather than value because value
  *is not used
  **/
-template <typename ForwardIterator>
+template <class ForwardIterator>
 inline void __destory_aux(ForwardIterator first, ForwardIterator last,
                           __false_type) {
   for (; first < last; ++first) destory(&*first);
@@ -70,7 +70,7 @@ inline void __destory_aux(ForwardIterator first, ForwardIterator last,
  * @param __true_type - denoting only the type rather than value because value
  *is not used
  **/
-template <typename ForwardIterator>
+template <class ForwardIterator>
 inline void __destory_aux(ForwardIterator first, ForwardIterator last,
                           __true_type) {}
 
