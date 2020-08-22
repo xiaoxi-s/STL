@@ -12,7 +12,7 @@ namespace sup {
 
 /**
  * Constructor bsed on type and value
- * 
+ *
  * @param T1
  * @param T2
  **/

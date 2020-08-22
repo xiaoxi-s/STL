@@ -31,6 +31,11 @@
  *
  * max_size():
  *   __PTRDIFF_MAX__ // it seems that the macro is defined in stdint.h
+ *
+ * Construct & Destory:
+ *   Not sure about what the version control is doing
+ *
+ *
  **/
 
 /**
@@ -140,6 +145,19 @@ class allocator_base {
   void construct(pointer p, T val) { ::new ((void*)p) T(val); }
 
   void destory(pointer p) { p->~T(); }
+
+
+  /**
+   * Comparator
+   **/
+  template <typename T1>
+  friend bool operator==(const allocator_base&, const allocator_base<T1>&) {
+    return true;
+  }
+  template <typename T1>
+  friend bool operator!=(const allocator_base&, const allocator_base<T1>&) {
+    return false;
+  }
 };
 
 }  // namespace sup
