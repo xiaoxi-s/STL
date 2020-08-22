@@ -1,4 +1,4 @@
-#ifdef _NAIVEALLOC_H
+#ifndef _NAIVEALLOC_H
 #define _NAIVEALLOC_H
 
 #include <climits>
@@ -12,8 +12,6 @@
  * 
  * @author Xiaoxi Sun
  **/
-
-
 namespace sup {
 
 template <class T>
@@ -79,7 +77,7 @@ class naive_allocator {
   size_type max_size() const {
       return size_type(UINT_MAX/sizeof(T));
   }
-}
+};
 
 }  // namespace sup
 
