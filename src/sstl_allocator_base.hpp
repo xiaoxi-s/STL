@@ -1,10 +1,16 @@
 #ifndef _SSTL_ALLOCATOR_BASE_H
 #define _SSTL_ALLOCATOR_BASE_H
+/**
+ * Partial credits to STL Annotated Sources by Jie Hou.
+ * Partial credits to STL sources.
+ *
+ * @author Xiaoxi Sun
+ **/
 
 #include <new>
 
 /**
- * Basic concepts in this part
+ * Concepts
  *
  * operator new and new; overload of those two "things"
  *
@@ -21,7 +27,7 @@
  **/
 
 /**
- * Question lists:
+ * Question:
  *
  *   What rebind() is used for?
  *
@@ -37,11 +43,12 @@
  * max_size():
  *   __PTRDIFF_MAX__ // it seems that the macro is defined in stdint.h
  *
- * Construct & Destory:
+ * Construct & destroy:
  *   Not sure about what the version control is doing
- *   (std::forward in construct & destory)
- *
+ *   (std::forward in construct & destroy)
  **/
+
+namespace sup {
 
 /**
  * This is a C++ standard allocator.
@@ -55,9 +62,6 @@
  *
  * @tparam T type of the allocated object.
  **/
-
-namespace sup {
-
 template <class T>
 class allocator_base {
  public:
@@ -150,16 +154,16 @@ class allocator_base {
   // Here is the simmplified version:
   void construct(pointer p, T val) { ::new ((void*)p) T(val); }
 
-  void destory(pointer p) { p->~T(); }
+  void destroy(pointer p) { p->~T(); }
 
   /**
    * Comparator
    **/
-  template <typename T1>
+  template <class T1>
   friend bool operator==(const allocator_base&, const allocator_base<T1>&) {
     return true;
   }
-  template <typename T1>
+  template <class T1>
   friend bool operator!=(const allocator_base&, const allocator_base<T1>&) {
     return false;
   }
