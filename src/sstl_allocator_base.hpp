@@ -13,6 +13,11 @@
  * allocator interface
  *
  * allocator stucture in STL of SGI.
+ *
+ * std::forward
+ *
+ * noexcept: The noexcept-specification is a part of the function type and may
+ * appear as part of any function declarator.
  **/
 
 /**
@@ -34,7 +39,7 @@
  *
  * Construct & Destory:
  *   Not sure about what the version control is doing
- *
+ *   (std::forward in construct & destory)
  *
  **/
 
@@ -139,13 +144,13 @@ class allocator_base {
     return size_t(-1) / sizeof(T);
   }
 
-  // Here there is a version control for c++11
+  // For C++ 11 and later versions, STL uses std::forward.
+  //
 
   // Here is the simmplified version:
   void construct(pointer p, T val) { ::new ((void*)p) T(val); }
 
   void destory(pointer p) { p->~T(); }
-
 
   /**
    * Comparator
