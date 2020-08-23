@@ -1,6 +1,6 @@
 # STL
 
-Implement basic algorithm, adaptor, container, iterator, functors in STL.
+Implement basic algorithm, adaptor, container, iterator, functors in STL. There would be concepts & questions related with each file based on the concepts learned from implementation. 
 
 ## Environment
 
