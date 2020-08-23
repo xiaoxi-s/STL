@@ -24,24 +24,26 @@
  *
  * noexcept: The noexcept-specification is a part of the function type and may
  * appear as part of any function declarator.
+ *
+ * max_size():
+ *   __PTRDIFF_MAX__ to ptrdiff_t is similar to INT_MAX to int
+ *
+ * std::__throw_bad_alloc():
+ *   Defined in <functexcept.h>. Throw an bad_alloc exception. This exception
+ *   demonstrates failure of using new to allocate space.
+ *
+ * __cpp_aligned_new:
+ *   This is a feature test Macro introduced since C++17.
+ *
+ * rebind():
+ *   The container might have the need of allcoating space for different types
  **/
 
 /**
  * Question:
- *
- *   What rebind() is used for?
- *
+ * 
  * Constructors:
  *   What are _GLIBCXX20_CONSTEXPR and _GLIBCXX_USE_NOEXCEPT for?
- *
- * allocate():
- *   std::__throw_bad_alloc()
- *
- * deallocate():
- *   __cpp_aligned_new Macro
- *
- * max_size():
- *   __PTRDIFF_MAX__ // it seems that the macro is defined in stdint.h
  *
  * Construct & destroy:
  *   Not sure about what the version control is doing
@@ -73,7 +75,8 @@ class allocator_base {
   typedef const T& const_reference;
   typedef T value_type;
 
-  // so far, not sure about the function of the struct below
+  // The container might have the need of allcoating
+  // space for different types
   template <class T1>
   struct rebind {
     typedef allocator_base<T1> other;
