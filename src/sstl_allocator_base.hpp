@@ -77,14 +77,13 @@ class allocator_base {
 
   // The container might have the need of allcoating
   // space for different types
-  template <class T1>
+  template <class T2>
   struct rebind {
-    typedef allocator_base<T1> other;
+    typedef allocator_base<T2> other;
   };
 
   /**
    * Several constructors.
-   *
    *
    * Notice that the source code of SGI does not specify some of the
    * type parameter (<T>). But I specify all of them for clarity.
