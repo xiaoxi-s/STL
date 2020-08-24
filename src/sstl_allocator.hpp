@@ -43,13 +43,13 @@
 
 /**
  * Questions:
- *
+ *   shrink_to_fit is not implemented here, which was introduced since C++11. 
  **/
 
 namespace sup {
 
-template<class T>
-class allocator; 
+template <class T>
+class allocator;
 
 // allocator specialize
 template <>
@@ -109,11 +109,11 @@ class allocator : public allocator_base<T> {
   // inherit everthing else (! from GNU sources code)
 };
 
+// operator== interfaces
 template <class T1, class T2>
 bool operator==(const allocator<T1>&, const allocator<T2>&) {
   return true;
 }
-
 template <class T1, class T2>
 bool operator!=(const allocator<T1>&, const allocator<T2>&) {
   return false;
@@ -143,15 +143,18 @@ struct _Alloc_Swap<Alloc, false> {
 // Compare (not equal) interface of allocators.
 template <class Alloc, bool = __is_empty(Alloc)>
 struct _Alloc_Neq {
+  // this is for improving efficiency related to stateless
+  // allocators
   static bool _neq(Alloc&, Alloc&) { return false; }
 };
-// partial specialization
+// partial specialization for non-empty allocators
 template <class Alloc>
 struct _Alloc_Neq<Alloc, false> {
   static bool _neq(Alloc& first, Alloc& second) { return first != second; }
 };
 
-// finish next time
+// There is a shrink_to_fit interface provided since C++11, which is 
+// not shown here. 
 
 }  // namespace sup
 
