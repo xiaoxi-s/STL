@@ -25,7 +25,7 @@
 /**
  * Questions:
  * 
- * None
+ *  Iterator_traits: studied later. 
  **/
 
 namespace sup {
