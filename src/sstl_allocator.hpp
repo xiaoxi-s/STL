@@ -48,6 +48,9 @@
 
 namespace sup {
 
+template<class T>
+class allocator; 
+
 // allocator specialize
 template <>
 class allocator<void> {
@@ -77,7 +80,7 @@ class allocator : public allocator_base<T> {
   typedef T value_type;
 
   // rebind for other usage.
-  template <T2>
+  template <class T2>
   struct rebind {
     typedef allocator<T2> other;
   };
@@ -140,12 +143,12 @@ struct _Alloc_Swap<Alloc, false> {
 // Compare (not equal) interface of allocators.
 template <class Alloc, bool = __is_empty(Alloc)>
 struct _Alloc_Neq {
-  static bool _neq(Alloc&, ALloc&) { return false; }
+  static bool _neq(Alloc&, Alloc&) { return false; }
 };
 // partial specialization
-template <class Alloc, bool = false>
-struct _Alloc_Neq {
-  static bool _neq(Alloc& first, ALloc& second) { return first != second; }
+template <class Alloc>
+struct _Alloc_Neq<Alloc, false> {
+  static bool _neq(Alloc& first, Alloc& second) { return first != second; }
 };
 
 // finish next time
