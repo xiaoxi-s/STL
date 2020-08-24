@@ -112,7 +112,7 @@ class allocator_base {
   /**
    * Allocation function. This is what you are looking for!
    *
-   * @param n - number of bytes
+   * @param n - number of elements
    *
    * Macros used here:
    *  - __cpp_aligned_new
