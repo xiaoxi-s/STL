@@ -42,7 +42,9 @@
  **/
 
 /**
- * Questions:
+ * Questions & Issues:
+ *   allocator<void> is not complete
+ * 
  *   shrink_to_fit is not implemented here, which was introduced since C++11. 
  **/
 
@@ -66,6 +68,9 @@ class allocator<void> {
   struct rebind {
     typedef allocator<T> other;
   };
+  
+  // construct & destory for allocator<void> need std::forward() to 
+  // pass on type parameter? 
 };
 
 template <class T>
