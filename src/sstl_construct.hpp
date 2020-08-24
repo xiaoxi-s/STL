@@ -58,25 +58,6 @@ inline void _Destroy(T* pointer) {
 }
 
 /******** 2. Destroy based on range ********/
-
-/**
- * Start point of the destroy based on range
- *
- * __cplusplus >= 201103L has an assertion
- **/
-template <class ForwardIterator>
-inline void _Destroy(ForwardIterator first, ForwardIterator last) {
-  // Get the value type
-  typedef typename std::iterator_traits<ForwardIterator>::value_type _value_type;
-
-  // c++11 would assert that whether the type is destructible;
-  // if so, and assert error is raised.
-
-  // destroy accordingly.
-  sup::_DestroyAux<__has_trivial_destructor(_value_type)>::__destory(first,
-                                                                     last);
-}
-
 /**
  * Auxiliary function for destroy based on range [first, last)
  * with non-trivial destructor
@@ -97,22 +78,25 @@ struct _DestroyAux<true> {
   static void __destroy(ForwardIterator first, ForwardIterator last) {}
 };
 
-/******** 3. Destory based on a pointer and number of elements ********/
-
 /**
- * Start point of the destroy based on pointer and size
+ * Start point of the destroy based on range
  *
- * c++ 11 static assert
+ * __cplusplus >= 201103L has an assertion
  **/
-template <class ForwardIterator, class SizeType>
-inline ForwardIterator _Destroy_n(ForwardIterator first, SizeType n) {
-  // get the value type
+template <class ForwardIterator>
+inline void _Destroy(ForwardIterator first, ForwardIterator last) {
+  // Get the value type
   typedef typename std::iterator_traits<ForwardIterator>::value_type _value_type;
 
-  // static assert in c++ 11
-  return sup::_DestroyNAux<__has_trivial_destructor(_value_type)>::__destory_n(first, n);
+  // c++11 would assert that whether the type is destructible;
+  // if so, and assert error is raised.
+
+  // destroy accordingly.
+  sup::_DestroyAux<__has_trivial_destructor(_value_type)>::__destory(first,
+                                                                     last);
 }
 
+/******** 3. Destory based on a pointer and number of elements ********/
 // with non-trivial destructor
 template <bool>
 struct _DestroyNAux {
@@ -135,7 +119,21 @@ struct _DestroyNAux<true> {
   }
 };
 
-// specialized destroy for char and wchar_t
+/**
+ * Start point of the destroy based on pointer and size
+ *
+ * c++ 11 static assert
+ **/
+template <class ForwardIterator, class SizeType>
+inline ForwardIterator _Destroy_n(ForwardIterator first, SizeType n) {
+  // get the value type
+  typedef typename std::iterator_traits<ForwardIterator>::value_type _value_type;
+
+  // static assert in c++ 11
+  return sup::_DestroyNAux<__has_trivial_destructor(_value_type)>::__destory_n(first, n);
+}
+
+/******** Specialized destroy for char and wchar_t ********/
 inline void _Destroy(char*, char*) {}
 // wide character for unicode encoding
 inline void _Destroy(wchar_t*, wchar_t*) {}
