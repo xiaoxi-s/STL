@@ -15,25 +15,36 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 
 ## Standard Libraries used
 
-1. sstl_allocator_base.hpp
+This part records the standard libraries that are not currently implemented, while have to be used. 
 
+1. sstl_allocator_base.hpp
+  - Source: 
+    <new>
+  - Functions: 
   Source: new (for placement new)
 
 2. sstl_construct.hpp
 
-  Source: type_traits
-  - ext/alloc_traits.h (for iterator_traits)
+  - Source: 
+    - <type_traits>
+    - ext/alloc_traits.h (for iterator_traits)
+
+  - Functions: 
+    - __has_trivial_destructor()
+    - std::__addressof
+    - std::advance
 
 3. sstl_uninitialized.hpp 
-  
-  Functions: 
-  - stl::__addressof
-  - std::iterator_traits
-  - is_trivial
+  - Sources: 
+    - <type_traits>
 
-  - std::copy
-  - std::fill
-  - std::fill_n
+  - Functions: 
+    - stl::__addressof
+    - std::iterator_traits
+    - is_trivial
+    - std::copy
+    - std::fill
+    - std::fill_n
 
 # Environment
 
@@ -53,4 +64,5 @@ VSCode
 
 # Next Step
 
-Study iterators.
+- Construct file with specified allocators
+- Study iterators
