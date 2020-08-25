@@ -7,7 +7,7 @@
 #include "sstl_construct.hpp"
 
 /**
- * Credits to
+ * Credits to STL source code from GNU
  *
  * @author Xiaoxi Sun
  **/
@@ -184,8 +184,8 @@ struct __uninitialized_fill_n {
   }
 };
 // trivial value type
-template <bool TrivialValueType>
-struct __uninitialized_fill_n {
+template <>
+struct __uninitialized_fill_n<true> {
   template <class ForwardIterator, class Size, class T>
   static ForwardIterator __uninit_fill_n(ForwardIterator first, Size n,
                                          const T& value) {
