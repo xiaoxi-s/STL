@@ -17,5 +17,6 @@ file(GLOB HEADERS "src/*.hpp")
 
 add_library(${THIS} STATIC ${SOURCES} ${HEADERS})
 
+set_target_properties(STL PROPERTIES LINKER_LANGUAGE CXX)
 
 add_subdirectory(test)
