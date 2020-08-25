@@ -31,20 +31,20 @@ This part records the standard libraries that are not currently implemented, whi
 
   - Functions: 
     - `__has_trivial_destructor()`
-    - `std::__addressof`
-    - `std::advance`
+    - `std::__addressof()`
+    - `std::advance()`
 
-- sstl_uninitialized.hpp 
+- `sstl_uninitialized.hpp`
   - Sources: 
     - `<type_traits>`
 
   - Functions: 
-    - `std::__addressof`
-    - `std::iterator_traits`
-    - `is_trivial`
-    - `std::copy`
-    - `std::fill`
-    - `std::fill_n`
+    - `std::__addressof()`
+    - `std::iterator_traits()`
+    - `is_trivial()`
+    - `std::copy()`
+    - `std::fill()`
+    - `std::fill_n()`
 
 # Environment
 
