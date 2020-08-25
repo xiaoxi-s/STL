@@ -2,10 +2,21 @@
 
 Implement basic algorithm, adaptor, container, iterator, functors in STL that are easier to understand. There would be concepts & questions related with each file based on the concepts learned from implementation. 
 
+## Environment
+
+- System: Ubuntu 20.04 LTS
+- Build: gcc 9.3.0 + CMake 3.16.3
+- Editor: VSCode
+
 # Current Situations
 
  - Allocators finished
  - Memory initialization library finished
+
+# Next Step
+
+- Construct with specified allocators
+- Study iterators
 
 # Considerations
 
@@ -45,24 +56,3 @@ This part records the standard libraries that are not currently implemented, whi
     - `std::copy()`
     - `std::fill()`
     - `std::fill_n()`
-
-# Environment
-
-## System
-
-Ubuntu 20.04 LTS
-
-## Build
-
-gcc 9.3.0
-
-CMake 3.16.3
-
-## Editor
-
-VSCode
-
-# Next Step
-
-- Construct file with specified allocators
-- Study iterators
