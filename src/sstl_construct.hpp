@@ -64,7 +64,7 @@ inline void _Destroy(T* pointer) {
  * with non-trivial destructor
  **/
 template <bool>
-struct _DestroyAux {
+struct _destroy_aux {
   template <class ForwardIterator>
   static void __destroy(ForwardIterator first, ForwardIterator last) {
     for (; first != last; ++first) {
@@ -74,7 +74,7 @@ struct _DestroyAux {
 };
 // with trivial destructor
 template <>
-struct _DestroyAux<true> {
+struct _destroy_aux<true> {
   template <class ForwardIterator>
   static void __destroy(ForwardIterator first, ForwardIterator last) {}
 };
@@ -93,14 +93,14 @@ inline void _Destroy(ForwardIterator first, ForwardIterator last) {
   // if so, and assert error is raised.
 
   // destroy accordingly.
-  sup::_DestroyAux<__has_trivial_destructor(_value_type)>::__destory(first,
+  sup::_destroy_aux<__has_trivial_destructor(_value_type)>::__destory(first,
                                                                      last);
 }
 
 /******** 3. Destory based on a pointer and number of elements ********/
 // with non-trivial destructor
 template <bool>
-struct _DestroyNAux {
+struct _destroy_n_aux {
   template <class ForwardIterator, class SizeType>
   static ForwardIterator __destroy_n(ForwardIterator first, SizeType n) {
     for (; n > 0; ++first, --n) {
@@ -112,7 +112,7 @@ struct _DestroyNAux {
 
 // (specialized template) with trivial destructor
 template <>
-struct _DestroyNAux<true> {
+struct _destroy_n_aux<true> {
   template <class ForwardIterator, class SizeType>
   static ForwardIterator __destroy_n(ForwardIterator first, SizeType n) {
     std::advance(first, n);
@@ -131,7 +131,7 @@ inline ForwardIterator _Destroy_n(ForwardIterator first, SizeType n) {
   typedef typename std::iterator_traits<ForwardIterator>::value_type _value_type;
 
   // static assert in c++ 11
-  return sup::_DestroyNAux<__has_trivial_destructor(_value_type)>::__destory_n(first, n);
+  return sup::_destroy_n_aux<__has_trivial_destructor(_value_type)>::__destory_n(first, n);
 }
 
 /******** Specialized destroy for char and wchar_t ********/

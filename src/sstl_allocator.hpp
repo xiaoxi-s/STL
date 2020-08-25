@@ -134,12 +134,12 @@ bool operator!=(const allocator<T1>&, const allocator<T2>&) {
 // Note that the naming standard here is contradictary to it in
 // sstl_construct in STL sources.
 template <class Alloc, bool = __is_empty(Alloc)>
-struct _Alloc_Swap {
+struct _alloc_swap {
   static void _swap(Alloc&, Alloc&) {}  // just the empty one
 };
 // specialize the non-empty one
 template <class Alloc>
-struct _Alloc_Swap<Alloc, false> {
+struct _alloc_swap<Alloc, false> {
   static void _swap(Alloc& first, Alloc& second) {
     if (first != second) swap(first, second);
   }
@@ -147,14 +147,14 @@ struct _Alloc_Swap<Alloc, false> {
 
 // Compare (not equal) interface of allocators.
 template <class Alloc, bool = __is_empty(Alloc)>
-struct _Alloc_Neq {
+struct _alloc_neq {
   // this is for improving efficiency related to stateless
   // allocators
   static bool _neq(Alloc&, Alloc&) { return false; }
 };
 // partial specialization for non-empty allocators
 template <class Alloc>
-struct _Alloc_Neq<Alloc, false> {
+struct _alloc_neq<Alloc, false> {
   static bool _neq(Alloc& first, Alloc& second) { return first != second; }
 };
 
