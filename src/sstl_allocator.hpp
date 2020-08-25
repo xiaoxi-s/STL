@@ -17,26 +17,26 @@
  *
  * Constructors:
  *  _GLIBCXX20_CONSTEXPR & constexpr - The constexpr specifier declares that it
- *  is possible to evaluate the value of the function or variable at compile
+ *   is possible to evaluate the value of the function or variable at compile
  *  time. A constexpr implies inline.
  *  from https://en.cppreference.com/w/cpp/language/constexpr
  *
  *  _GLIBCXX_NOTHROW & nothrow - This constant value is used as an argument for
- *  operator new and operator new[] to indicate that these functions shall not
- *  throw an exception on failure, but return a null pointer instead.
- *  from http://www.cplusplus.com/reference/new/nothrow/
+ *   operator new and operator new[] to indicate that these functions shall not
+ *   throw an exception on failure, but return a null pointer instead.
+ *   from http://www.cplusplus.com/reference/new/nothrow/
  *
- * Operator = overload:
- *  default keyword: explicitly-defaulted function definition: as an explicit
- *  instruction to the compiler to generate special member function or a
- *  comparison operator (since C++20) for a class.
- *  from https://en.cppreference.com/w/cpp/keyword/default
+ *  Operator = overload:
+ *   default keyword: explicitly-defaulted function definition: as an explicit
+ *   instruction to the compiler to generate special member function or a
+ *   comparison operator (since C++20) for a class.
+ *   from https://en.cppreference.com/w/cpp/keyword/default
  *
- * Template specification:
+ *  Template specification:
  *   volatile explained here:
  *   https://www.tutorialspoint.com/What-does-the-volatile-keyword-mean-in-Cplusplus
  *
- * Swap:
+ *  Swap:
  *   Use __is_empty() to determine whether a allocator is an empty type. This
  *   would save swapping time.
  **/
