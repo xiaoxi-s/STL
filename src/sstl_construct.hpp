@@ -1,14 +1,15 @@
 #ifndef _SSTL_CONSTRUCT_H
 #define _SSTL_CONSTRUCT_H
+
+#include <new>  // to use placement new
+#include <ext/alloc_traits.h>
+
 /**
  * Partial credits to STL Annotated Sources by Jie Hou.
  * Partial credits to STL sources.
  *
  * @author Xiaoxi Sun
  **/
-
-#include <new>  // to use placement new
-#include <ext/alloc_traits.h>
 
 /**
  * Concepts
