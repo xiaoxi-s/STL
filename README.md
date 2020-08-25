@@ -17,34 +17,34 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 
 This part records the standard libraries that are not currently implemented, while have to be used. 
 
-1. sstl_allocator_base.hpp
+1. `sstl_allocator_base.hpp` and `sstl_allocator.hpp`
   - Source: 
-    <new>
+    `<new>`
   - Functions: 
-  Source: new (for placement new)
+    - `static_cast<T>()`
 
-2. sstl_construct.hpp
+2. `sstl_construct.hpp`
 
   - Source: 
-    - <type_traits>
-    - ext/alloc_traits.h (for iterator_traits)
+    - `<type_traits>`
+    - `ext/alloc_traits.h` (for iterator_traits)
 
   - Functions: 
-    - __has_trivial_destructor()
-    - std::__addressof
-    - std::advance
+    - `__has_trivial_destructor()`
+    - `std::__addressof`
+    - `std::advance`
 
 3. sstl_uninitialized.hpp 
   - Sources: 
-    - <type_traits>
+    - `<type_traits>`
 
   - Functions: 
-    - stl::__addressof
-    - std::iterator_traits
-    - is_trivial
-    - std::copy
-    - std::fill
-    - std::fill_n
+    - `stl::__addressof`
+    - `std::iterator_traits`
+    - `is_trivial`
+    - `std::copy`
+    - `std::fill`
+    - `std::fill_n`
 
 # Environment
 
