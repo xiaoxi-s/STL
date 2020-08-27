@@ -1,8 +1,8 @@
 #ifndef _SSTL_CONSTRUCT_H
 #define _SSTL_CONSTRUCT_H
 
+#include <ext/alloc_traits.h> // destory based on allocator 
 #include <new>  // to use placement new
-#include <ext/alloc_traits.h>
 
 /**
  * Partial credits to STL Annotated Sources by Jie Hou.
@@ -19,14 +19,18 @@
  * use struct like a namespace
  *
  * destroy: __cplusplus >= 201103L has an assertion about "is_destructible"
- * 
- * iterator_traits - defined in std namespace. Remember this!  
+ *
+ * iterator_traits - defined in std namespace. Remember this!
  **/
 
 /**
  * Questions:
  * 
- *  Iterator_traits: studied later. 
+ *  _Destory with template parameter for allocators
+ *  
+ *  alloc_traits: studied with iterator_traits
+ *
+ *  Iterator_traits: studied later.
  **/
 
 namespace sup {
@@ -50,7 +54,7 @@ inline void _Construct(T1* p, const T2& value) {
 /******** 1. Destroy based on only a pointer. ********/
 /**
  * Destroy the object pointed by pointer
- * 
+ *
  * @param pointer the pointer to the object being destroyed
  **/
 template <class T>
@@ -68,7 +72,7 @@ struct _destroy_aux {
   template <class ForwardIterator>
   static void __destroy(ForwardIterator first, ForwardIterator last) {
     for (; first != last; ++first) {
-      sup::_Destroy(std::addressof(*first));
+      sup::_Destroy(std::__addressof(*first));
     }
   }
 };
@@ -87,14 +91,15 @@ struct _destroy_aux<true> {
 template <class ForwardIterator>
 inline void _Destroy(ForwardIterator first, ForwardIterator last) {
   // Get the value type
-  typedef typename std::iterator_traits<ForwardIterator>::value_type _value_type;
+  typedef
+      typename std::iterator_traits<ForwardIterator>::value_type _value_type;
 
   // c++11 would assert that whether the type is destructible;
   // if so, and assert error is raised.
 
   // destroy accordingly.
   sup::_destroy_aux<__has_trivial_destructor(_value_type)>::__destory(first,
-                                                                     last);
+                                                                      last);
 }
 
 /******** 3. Destory based on a pointer and number of elements ********/
@@ -104,7 +109,7 @@ struct _destroy_n_aux {
   template <class ForwardIterator, class SizeType>
   static ForwardIterator __destroy_n(ForwardIterator first, SizeType n) {
     for (; n > 0; ++first, --n) {
-      sup::_Destroy(std::addressof(*first));
+      sup::_Destroy(std::__addressof(*first));
     }
     return first;
   }
@@ -128,16 +133,32 @@ struct _destroy_n_aux<true> {
 template <class ForwardIterator, class SizeType>
 inline ForwardIterator _Destroy_n(ForwardIterator first, SizeType n) {
   // get the value type
-  typedef typename std::iterator_traits<ForwardIterator>::value_type _value_type;
+  typedef
+      typename std::iterator_traits<ForwardIterator>::value_type _value_type;
 
   // static assert in c++ 11
-  return sup::_destroy_n_aux<__has_trivial_destructor(_value_type)>::__destory_n(first, n);
+  return sup::_destroy_n_aux<__has_trivial_destructor(
+      _value_type)>::__destory_n(first, n);
 }
 
 /******** Specialized destroy for char and wchar_t ********/
 inline void _Destroy(char*, char*) {}
 // wide character for unicode encoding
 inline void _Destroy(wchar_t*, wchar_t*) {}
+
+/**
+ * Destroy a range of objects using the specified allocator.
+ *
+ * There is no optimization even the object being destroyed has trivial
+ * destructor
+ **/
+template <class ForwardIterator, class Allocator>
+void _Destroy(ForwardIterator first, ForwardIterator last, Allocator& alloc) {
+  typedef __gnu_cxx::__alloc_traits<Allocator> traits;
+  for (;first!=last;++first) {
+    traits::destory(alloc, std::__addressof(*first));
+  }
+}
 
 }  // namespace sup
 #endif

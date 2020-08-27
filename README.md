@@ -15,7 +15,6 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 
 # Next Step
 
-- Construct with specified allocators
 - Study iterators
 
 # Considerations
@@ -38,13 +37,13 @@ This part records the standard libraries that are not currently implemented, whi
 
   - Source: 
     - `<type_traits>`
-    - `ext/alloc_traits.h` (for iterator_traits)
+    - `<ext/alloc_traits.h>` (for iterator_traits)
 
-  - Functions: 
+  - Functions & Types: 
     - `__has_trivial_destructor()`
     - `std::__addressof()`
     - `std::advance()`
-
+    - `__gnu_cxx::__alloc_traits<Allocator>`
 - `sstl_uninitialized.hpp`
   - Sources: 
     - `<type_traits>`
