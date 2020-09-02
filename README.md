@@ -9,8 +9,9 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 - Editor: VSCode
 
 # Current Situations
-
+ - Allocators finished
  - Memory initialization library finished
+ - `reverse_iterator` and arithmatics is not implemented. 
 
 # Next Step
 
