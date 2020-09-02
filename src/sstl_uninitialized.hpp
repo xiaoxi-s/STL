@@ -2,9 +2,10 @@
 #define _SSTL_UNINITIALIZED_H
 
 // after c++11 (inclusive) will have this header
-#include <type_traits>
 
+#include "sstl_type_tratis.hpp"
 #include "sstl_construct.hpp"
+#include "sstl_iterator_base.hpp"
 
 /**
  * Credits to STL source code from GNU
@@ -58,14 +59,14 @@ struct __uninitialized_copy {
     // try-catch that would not be optimized
     __try {
       while (first != last) {
-        sup::_Construct(std::__addressof(result), *first);
+        sup::_construct(std::__addressof(result), *first);
         ++first;
         ++result;
       }
       return curr;
     }
     __catch(...) {
-      sup::_Destroy(curr, result);
+      sup::_destroy(curr, result);
       __throw_exception_again;
     }
   }
@@ -97,9 +98,9 @@ template <class InputIterator, class ForwardIterator>
 inline ForwardIterator uninitialized_copy(InputIterator first,
                                           InputIterator last,
                                           ForwardIterator result) {
-  typedef typename std::iterator_traits<InputIterator>::value_type _value_type1;
+  typedef typename sup::iterator_traits<InputIterator>::value_type _value_type1;
   typedef
-      typename std::iterator_traits<ForwardIterator>::value_type _value_type2;
+      typename sup::iterator_traits<ForwardIterator>::value_type _value_type2;
 
   // similified here. There would be more code after c++11 (inclusive)
 
@@ -119,11 +120,11 @@ struct __uninitialized_fill {
     ForwardIterator curr = first;
     __try {
       for (; curr != last; ++curr) {
-        sup::_Construct(std::__addressof(*curr), value);
+        sup::_construct(std::__addressof(*curr), value);
       }
     }
     __catch(...) {
-      sup::_Destroy(first, curr);
+      sup::_destroy(first, curr);
       __throw_exception_again;
     }
   }
@@ -154,7 +155,7 @@ template <class ForwardIterator, class T>
 inline void uninitialized_fill(ForwardIterator first, ForwardIterator last,
                                const T& value) {
   typedef
-      typename std::iterator_traits<ForwardIterator>::value_type _value_type;
+      typename sup::iterator_traits<ForwardIterator>::value_type _value_type;
 
   // simiplified here There would be more code after c++11 (inclusive)
 
@@ -174,11 +175,11 @@ struct __uninitialized_fill_n {
     __try {
       // why (void) ++curr
       for (; n > 0; --n, ++curr) {
-        sup::_Construct(std::__addressof(*first, value));
+        sup::_construct(std::__addressof(*first, value));
       }
     }
     __catch(...) {
-      sup::_Destroy_n(first, n);
+      sup::_destroy_n(first, n);
       __throw_exception_again;
     }
   }
@@ -209,7 +210,7 @@ template <class ForwardIterator, class Size, class T>
 inline ForwardIterator uninitialized_fill_n(ForwardIterator first, Size n,
                                             const T& value) {
   typedef
-      typename std::iterator_traits<ForwardIterator>::value_type _value_type;
+      typename sup::iterator_traits<ForwardIterator>::value_type _value_type;
 
   // simplified here
 
