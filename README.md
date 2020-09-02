@@ -10,12 +10,11 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 
 # Current Situations
 
- - Allocators finished
  - Memory initialization library finished
 
 # Next Step
 
-- Study iterators
+- Study containers
 
 # Considerations
 
@@ -44,6 +43,12 @@ This part records the standard libraries that are not currently implemented, whi
     - `std::__addressof()`
     - `std::advance()`
     - `__gnu_cxx::__alloc_traits<Allocator>`
+
+- `sstl_iterator.hpp`
+  - Source: None
+  - Functions: None
+  - Keyword: `decltype`
+
 - `sstl_uninitialized.hpp`
   - Sources: 
     - `<type_traits>`
