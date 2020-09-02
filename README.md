@@ -17,6 +17,10 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 
 - Study containers
 
+# Test
+
+- Tests will be implemented after at least one container is implemented. 
+
 # Considerations
 
  - Multi-threading is not considered. 
