@@ -2,7 +2,6 @@
 #define _SSTL_ITERATOR_BASE_H
 
 #include <cstddef>
-#include <type_traits>
 
 /**
  * @author Xiaoxi Sun
@@ -159,7 +158,7 @@ inline void __advance(RandomAccessIterator& i, Distance n, random_access_iterato
 template <class InputIterator, class Distance>
 inline void advance(
     InputIterator &i, Distance n) {
-  __advance(i, iterator_category(i));
+  __advance(i, n, iterator_category(i));
 }
 
 // there are functions for returning base type for iterators
