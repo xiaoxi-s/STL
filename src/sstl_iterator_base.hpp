@@ -42,7 +42,7 @@ class iterator {
   typedef T value_type;
   typedef Distance difference_type;
   typedef Pointer pointer;
-  typedef Reference referece;
+  typedef Reference reference;
 };
 
 // for C++11, there is the definition related with __void_t.
@@ -57,7 +57,7 @@ class iterator_traits {
   typedef typename Iterator::value_type value_type;
   typedef typename Iterator::difference_type difference_type;
   typedef typename Iterator::pointer pointer;
-  typedef typename Iterator::reference referece;
+  typedef typename Iterator::reference reference;
 };
 
 // Partial specialization of pointer types
@@ -68,7 +68,7 @@ class iterator_traits<T*> {
   typedef T value_type;
   typedef ptrdiff_t difference_type;
   typedef T* pointer;
-  typedef T& referece;
+  typedef T& reference;
 };
 template <class T>
 class iterator_traits<const T*> {
@@ -77,7 +77,7 @@ class iterator_traits<const T*> {
   typedef T value_type;
   typedef ptrdiff_t difference_type;
   typedef const T* pointer;
-  typedef const T& referece;
+  typedef const T& reference;
 };
 
 /******** some helper functions for easier extraction ********/
