@@ -60,13 +60,16 @@ class reverse_iterator
 
   // need (--current) to be a valid iterator
   reference operator*() const {
-    // do not know why source code use --.
-    return *current;
+    Iterator temp = current;
+    return *--temp;
   }
 
   pointer operator->() const {
     // do not know why source code uses --.
-    return _to_pointer(current);
+    Iterator temp = current;
+    --temp;
+    // must use this function (must consider native pointer)
+    return _to_pointer(temp);
   }
 
   // for reverse_iterator, this is essentially pre --
