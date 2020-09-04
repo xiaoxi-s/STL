@@ -137,11 +137,6 @@ inline void __advance(InputIterator& i, Distance n, input_iterator_tag) {
   while (--n) ++i;
 }
 
-template <class ForwardIterator, class Distance>
-inline void __advance(ForwardIterator& i, Distance n, forward_iterator_tag) {
-  while(--n) ++i;
-}
-
 template <class BidirectionalIterator, class Distance>
 inline void __advance(BidirectionalIterator& i, Distance n, bidirectional_iterator_tag) {
   if (n >= 0) 
