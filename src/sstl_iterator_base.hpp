@@ -158,7 +158,8 @@ inline void __advance(RandomAccessIterator& i, Distance n, random_access_iterato
 template <class InputIterator, class Distance>
 inline void advance(
     InputIterator &i, Distance n) {
-  __advance(i, n, iterator_category(i));
+  typedef typename iterator_traits<InputIterator>::iterator_category category;
+  __advance(i, n, category());
 }
 
 // there are functions for returning base type for iterators
