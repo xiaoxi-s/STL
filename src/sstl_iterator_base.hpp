@@ -139,7 +139,7 @@ inline void __advance(InputIterator& i, Distance n, input_iterator_tag) {
 
 template <class ForwardIterator, class Distance>
 inline void __advance(ForwardIterator& i, Distance n, forward_iterator_tag) {
-  advance(i, n, input_iterator_tag());
+  while(--n) ++i;
 }
 
 template <class BidirectionalIterator, class Distance>
