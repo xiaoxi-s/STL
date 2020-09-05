@@ -124,7 +124,7 @@ class reverse_iterator
   // do this in the reverse way
   reference operator[](difference_type n) {
     // source code use *(*this + n), which is the same
-    return *(current - n);
+    return *(*this + n);
   }
 
 protected:
