@@ -19,6 +19,12 @@ TEST(reverse_iterator_test, native_pointer_plus) {
   while (r_it1 != r_it_end && r_it2 != r_it_end && r_it3 != r_it_end &&
          r_it4 != r_it_end) {
 
+    // result in the expected position
+    EXPECT_TRUE(*r_it1 == temp);
+    EXPECT_TRUE(*r_it2 == temp);
+    EXPECT_TRUE(*r_it3 == temp);
+
+    // test for plus related operators
     r_it1 += 1;
     r_it2++;
     ++r_it3;
@@ -42,10 +48,13 @@ TEST(reverse_iterator_test, native_pointer_minus) {
   int temp = 0;
   while (r_it1 != r_it_end && r_it2 != r_it_end && r_it3 != r_it_end &&
          r_it4 != r_it_end) {
+
+    // result in the expected position
     EXPECT_TRUE(*r_it1 == temp);
     EXPECT_TRUE(*r_it2 == temp);
     EXPECT_TRUE(*r_it3 == temp);
 
+    // test for minus related operators
     r_it1 -= 1;
     r_it2--;
     --r_it3;
@@ -100,8 +109,8 @@ TEST(reverse_iterator_test, native_pointer_dereference) {
 
   int temp = 9;
   while (r_it != r_it_end) {
+    // test for dereference
     EXPECT_TRUE(*r_it == temp);
-
     r_it += 1;
     --temp;
   }
@@ -119,6 +128,7 @@ TEST(reverse_iterator_test, native_pointer_index) {
 
   int temp = 9;
   for (int i = 0; i < 10; ++i) {
+    // test for index operator
     EXPECT_TRUE(r_it[i] == temp);
     --temp;
   }
