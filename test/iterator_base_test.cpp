@@ -174,6 +174,4 @@ TEST(iterator_base_test, customized_random_iterator_advance_distance) {
   EXPECT_TRUE(sup::distance(myit1, myit2) == 2);
 }
 
-
-
 }  // namespace iterator_base_test
