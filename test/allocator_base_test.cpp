@@ -6,7 +6,7 @@
 
 namespace allocator_base_test {
 
-TEST(Allocator_base_test, allocate_return_null) {
+TEST(allocator_base_test, allocate_return_null) {
   sup::allocator_base<int> a;
   int* ptr = a.allocate(0);
   EXPECT_TRUE(ptr == nullptr);
@@ -23,7 +23,7 @@ class ClassForTest {
 int ClassForTest::object_counter_ = 0;
 int ClassForTest::destroy_times_ = 0;
 
-TEST(Allocator_base_test, allocate_not_call_constructor) {
+TEST(Allocator_base_test, Not_call_constructor) {
   sup::allocator_base<ClassForTest> a;
   ClassForTest* ptr = a.allocate(10);
   EXPECT_TRUE(ClassForTest::object_counter_ == 0);
@@ -33,5 +33,6 @@ TEST(Allocator_base_test, allocate_not_call_constructor) {
   // deallocate without calling destructors
   EXPECT_TRUE(ClassForTest::destroy_times_ == 0);
 }
+
 
 }  // namespace allocator_base_test
