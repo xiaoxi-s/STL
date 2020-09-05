@@ -97,7 +97,7 @@ TEST(reverse_iterator_test, native_pointer_dereference) {
   }
   sup::reverse_iterator<int *> r_it_end(it);
   sup::reverse_iterator<int *> r_it(it + 10);
-  
+
   int temp = 9;
   while (r_it != r_it_end) {
     EXPECT_TRUE(*r_it == temp);
