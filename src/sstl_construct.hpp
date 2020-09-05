@@ -1,7 +1,7 @@
 #ifndef _SSTL_CONSTRUCT_H
 #define _SSTL_CONSTRUCT_H
 
-#include <ext/alloc_traits.h>  // destory based on allocator
+#include <ext/alloc_traits.h>  // destroy based on allocator
 #include <new>                 // to use placement new
 
 #include "sstl_iterator_base.hpp"
@@ -28,7 +28,7 @@
 /**
  * Questions:
  *
- *  _Destory with template parameter for allocators
+ *  _destroy with template parameter for allocators
  *
  *  alloc_traits: studied with iterator_traits
  *
@@ -55,7 +55,7 @@ inline void _Construct_novalue(T* p) {
 
 /******** destroy() ********/
 // Three types: single type, single type + size, range
-// _Destory(T*); _Destory(ForwardIterator, ForwardIterator);
+// _destroy(T*); _destroy(ForwardIterator, ForwardIterator);
 // _Destroy(ForwardIterator, SizeType)
 
 /******** 1. Destroy based on only a pointer. ********/
@@ -105,11 +105,11 @@ inline void _destroy(ForwardIterator first, ForwardIterator last) {
   // if so, and assert error is raised.
 
   // destroy accordingly.
-  sup::_destroy_aux<__has_trivial_destructor(_value_type)>::__destory(first,
+  sup::_destroy_aux<__has_trivial_destructor(_value_type)>::__destroy(first,
                                                                       last);
 }
 
-/******** 3. Destory based on a pointer and number of elements ********/
+/******** 3. Destroy based on a pointer and number of elements ********/
 // with non-trivial destructor
 template <bool>
 struct _destroy_n_aux {
@@ -145,7 +145,7 @@ inline ForwardIterator _destroy_n(ForwardIterator first, SizeType n) {
 
   // static assert in c++ 11
   return sup::_destroy_n_aux<__has_trivial_destructor(
-      _value_type)>::__destory_n(first, n);
+      _value_type)>::__destroy_n(first, n);
 }
 
 /******** Specialized destroy for char and wchar_t ********/
@@ -163,7 +163,7 @@ template <class ForwardIterator, class Allocator>
 void _destroy(ForwardIterator first, ForwardIterator last, Allocator& alloc) {
   typedef __gnu_cxx::__alloc_traits<Allocator> traits;
   for (; first != last; ++first) {
-    traits::destory(alloc, std::__addressof(*first));
+    traits::destroy(alloc, std::__addressof(*first));
   }
 }
 
