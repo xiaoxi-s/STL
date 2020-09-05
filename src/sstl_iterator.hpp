@@ -65,7 +65,6 @@ class reverse_iterator
   }
 
   pointer operator->() const {
-    // do not know why source code uses --.
     Iterator temp = current;
     --temp;
     // must use this function (must consider native pointer)
@@ -82,7 +81,7 @@ class reverse_iterator
   reverse_iterator operator++(int) {
     reverse_iterator temp(current);
     --current;
-    return *temp;
+    return temp;
   }
 
   // just do this in the reverse way
@@ -95,7 +94,7 @@ class reverse_iterator
   reverse_iterator operator--(int) {
     reverse_iterator temp(current);
     ++current;
-    return *temp;
+    return temp;
   }
 
   // notice that this returns a copy
@@ -128,6 +127,7 @@ class reverse_iterator
     return *(current - n);
   }
 
+protected:
   // in order to be compatible with native pointers
   template <class T>
   static T* _to_pointer(T* p) {
