@@ -159,7 +159,7 @@ inline void uninitialized_fill(ForwardIterator first, ForwardIterator last,
 
   // simiplified here There would be more code after c++11 (inclusive)
 
-  sup::__uninitialized_fill<__is_trivial(_value_type)>::uninit_fill(first, last,
+  sup::__uninitialized_fill<__is_trivial(_value_type)>::__uninit_fill(first, last,
                                                                     value);
 }
 
