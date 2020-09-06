@@ -19,7 +19,10 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 
 # Test
 
-- Tests will be implemented after at least one container is implemented. 
+- `allocator`: allocator unfinished; base finished
+- `iterator`: finished
+- `construct`: finished
+- `uninitialized`: finished
 
 # Considerations
 
@@ -49,14 +52,18 @@ This part records the standard libraries that are not currently implemented, whi
     - `std::advance()`
     - `__gnu_cxx::__alloc_traits<Allocator>`
 
+- `sstl_iterator_base.hpp`
+  - Source: `<cstddef>`
+  - Functions:
+    - `std::advance()`
+
 - `sstl_iterator.hpp`
   - Source: None
   - Functions: None
   - Keyword: `decltype`
 
 - `sstl_uninitialized.hpp`
-  - Sources: 
-    - `<type_traits>`
+  - Sources: None
 
   - Functions: 
     - `std::__addressof()`
@@ -65,3 +72,7 @@ This part records the standard libraries that are not currently implemented, whi
     - `std::copy()`
     - `std::fill()`
     - `std::fill_n()`
+
+- `sstl_vector.hpp`
+  - Sources:
+  - Functions: 
