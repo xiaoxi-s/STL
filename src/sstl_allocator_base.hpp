@@ -1,9 +1,7 @@
 #ifndef _SSTL_ALLOCATOR_BASE_H
 #define _SSTL_ALLOCATOR_BASE_H
+
 /**
- * Partial credits to STL Annotated Sources by Jie Hou.
- * Partial credits to STL sources.
- *
  * @author Xiaoxi Sun
  **/
 

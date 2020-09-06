@@ -4,11 +4,6 @@
 #include "sstl_allocator_base.hpp"
 
 /**
- * Credits to STL source by GNU
- *
- * This implementation removes the intermidiate naming in
- * c++allocator.h for brevity.
- *
  * @author Xiaoxi Sun
  **/
 

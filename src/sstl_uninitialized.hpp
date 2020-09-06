@@ -8,8 +8,6 @@
 #include "sstl_iterator_base.hpp"
 
 /**
- * Credits to STL source code from GNU
- *
  * @author Xiaoxi Sun
  **/
 

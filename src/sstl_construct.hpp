@@ -7,9 +7,6 @@
 #include "sstl_iterator_base.hpp"
 
 /**
- * Partial credits to STL Annotated Sources by Jie Hou.
- * Partial credits to STL sources.
- *
  * @author Xiaoxi Sun
  **/
 
