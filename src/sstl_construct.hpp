@@ -124,7 +124,7 @@ template <>
 struct _destroy_n_aux<true> {
   template <class ForwardIterator, class SizeType>
   static ForwardIterator __destroy_n(ForwardIterator first, SizeType n) {
-    std::advance(first, n);
+    sup::advance(first, n);
     return first;
   }
 };

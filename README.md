@@ -49,13 +49,11 @@ This part records the standard libraries that are not currently implemented, whi
   - Functions & Types: 
     - `__has_trivial_destructor()`
     - `std::__addressof()`
-    - `std::advance()`
     - `__gnu_cxx::__alloc_traits<Allocator>`
 
 - `sstl_iterator_base.hpp`
   - Source: `<cstddef>`
   - Functions:
-    - `std::advance()`
 
 - `sstl_iterator.hpp`
   - Source: None
