@@ -57,11 +57,11 @@ struct __uninitialized_copy {
     // try-catch that would not be optimized
     __try {
       while (first != last) {
-        sup::_construct(std::__addressof(result), *first);
+        sup::_construct(std::__addressof(*result), *first);
         ++first;
         ++result;
       }
-      return curr;
+      return result;
     }
     __catch(...) {
       sup::_destroy(curr, result);
@@ -173,8 +173,10 @@ struct __uninitialized_fill_n {
     __try {
       // why (void) ++curr
       for (; n > 0; --n, ++curr) {
-        sup::_construct(std::__addressof(*first, value));
+        sup::_construct(std::__addressof(*curr), value);
       }
+
+      return curr;
     }
     __catch(...) {
       sup::_destroy_n(first, n);
