@@ -46,7 +46,7 @@ inline void _construct(T1* p, const T2& value) {
 }
 
 template <typename T>
-inline void _Construct_novalue(T* p) {
+inline void _construct_novalue(T* p) {
   ::new (static_cast<void*>(p)) T;
 }
 
