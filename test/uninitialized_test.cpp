@@ -1,5 +1,6 @@
-#include <vector>
 #include <gtest/gtest.h>
+#include <vector>
+#include <string>
 
 #include "../src/sstl_uninitialized.hpp"
 
@@ -17,16 +18,13 @@ TEST(uninitialized_fill, native_pointer) {
   }
 }
 
-TEST(uninitialized_fill, vector_iterator){
-  std::vector<int> vec(10, 1); // the vector contains 10 1s
-  std::vector<int>::iterator start = vec.begin();
-  std::vector<int>::iterator end = vec.end();
-
-  sup::uninitialized_fill(start, end, 0);
+TEST(uninitialized_fill, write_to_string_array){
+  std::string ss[10];
+  sup::uninitialized_fill(ss, ss+10, "abc");
 
   // test for all values are 0
   for(int i = 0; i < 10; ++i) {
-    EXPECT_TRUE(vec[i] == 0);
+    EXPECT_TRUE(ss[i] == "abc");
   }
 }
 
@@ -41,26 +39,22 @@ TEST(uninitialized_copy, write_to_native_pointer) {
   }
 
   // test write to the elements pointed by native pointer & return value
-  EXPECT_TRUE(sup::uninitialized_copy(start, vec.end(), p) == p + 10);
+  EXPECT_TRUE(sup::uninitialized_copy(start, vec.end(), p) == array + 10);
   for(int i = 0; i < 10; ++i) {
     EXPECT_TRUE(p[i] == 1);
   }
 }
 
-TEST(uninitialized_copy, write_to_vector_iterator) {
-  int array[10];
-  std::vector<int> vec(10, 1); // the vector contains 10 1s
-  std::vector<int>::iterator start = vec.begin();
+TEST(uninitialized_copy, write_to_string_array) {
+  std::vector<std::string> vec(10, "abc"); // the vector contains 10 1s
+  std::vector<std::string>::iterator start = vec.begin();
 
-  int *p = array;
-  for(int i= 0; i < 10; ++i) {
-    p[i] = 0;
-  }
+  std::string ss[10];
 
   // test write to the elements pointed by iterator & return value
-  EXPECT_TRUE(sup::uninitialized_copy(p, p+ 10 , start) == vec.end());
-  for(int i = 0; i < 10; ++i) {
-    EXPECT_TRUE(vec[i] == 0);
+  EXPECT_TRUE(sup::uninitialized_copy(start, start + 10, ss) == ss+10);
+  for (int i = 0; i < 10; ++i) {
+    EXPECT_TRUE(ss[i] == "abc");
   }
 }
 
@@ -80,13 +74,13 @@ TEST (uninitialized_fill_n, write_to_native_pointer) {
   }
 }
 
-TEST(uninitialized_fill_n, write_to_vector_iterator) {
-  std::vector<int> vec(10, 1); // the vector contains 10 1s
+TEST(uninitialized_fill_n, write_to_string_array) {
 
+  std::string s[10];
   // test write to the elements pointed by iterator & return value
-  EXPECT_TRUE(sup::uninitialized_fill_n(vec.begin(), 10 , 0) == vec.end());
+  EXPECT_TRUE(sup::uninitialized_fill_n(s, 10 , "abc") == s+10);
   for(int i = 0; i < 10; ++i) {
-    EXPECT_TRUE(vec[i] == 0);
+    EXPECT_TRUE(s[i] == "abc");
   }
 }
 }
