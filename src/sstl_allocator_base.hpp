@@ -103,9 +103,9 @@ class allocator_base {
    * Macros used here:
    *  - _GLIBCXX_NOEXCEPT
    **/
-  pointer address(reference x) const { return std::__addressof(x); }
+  static pointer address(reference x) { return std::__addressof(x); }
 
-  const_pointer address(const_reference x) const { return std::__addressof(x); }
+  static const_pointer address(const_reference x) { return std::__addressof(x); }
 
   /**
    * Allocation function. This is what you are looking for!
@@ -115,8 +115,8 @@ class allocator_base {
    * Macros used here:
    *  - __cpp_aligned_new
    **/
-  pointer allocate(size_type n, const void* = static_cast<const void*>(0)) {
-    if (n > this->max_size())
+  static pointer allocate(size_type n, const void* = static_cast<const void*>(0)) {
+    if (n > allocator_base<T>::max_size())
       std::__throw_bad_alloc();  // this is an interesting function. study later
 
     // C++ standard does not specify this. Return nullptr for completeness
@@ -133,7 +133,7 @@ class allocator_base {
    * @param p - pointing to the space that would be deallocated
    * @param size_type - I do not know why
    **/
-  void deallocate(pointer p, size_type) {
+  static void deallocate(pointer p, size_type) {
     // there should be some alignment issues
 
     ::operator delete(p);
@@ -143,7 +143,7 @@ class allocator_base {
    * @return the maximum allocable size
    * __PTRDIFF_MAX__
    **/
-  size_type max_size() const {
+  static size_type max_size() {
     // Might use __PTRDIFF_MAX
     return size_t(-1) / sizeof(T);
   }
@@ -152,9 +152,9 @@ class allocator_base {
   //
 
   // Here is the simmplified version:
-  void construct(pointer p, T val) { ::new ((void*)p) T(val); }
+  static void construct(pointer p, T val) { ::new ((void*)p) T(val); }
 
-  void destroy(pointer p) { p->~T(); }
+  static void destroy(pointer p) { p->~T(); }
 
   /**
    * Comparator
