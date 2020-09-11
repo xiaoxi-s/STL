@@ -72,5 +72,9 @@ This part records the standard libraries that are not currently implemented, whi
     - `std::fill_n()`
 
 - `sstl_vector.hpp`
-  - Sources:
+  - Sources: None
   - Functions: 
+    - `std::copy`
+    - `std::copy_backward`
+    - `std::is_integral<>`
+    - `std::fill`
