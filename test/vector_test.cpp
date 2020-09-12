@@ -72,7 +72,7 @@ TEST(vector_int_test, element_access) {
   EXPECT_TRUE(vec.back() == 9);
 }
 
-TEST(vector_int_test, modify_vector) {
+TEST(vector_int_test, push_and_pop) {
   // push back 7, 8, 9,..., 16
   sup::vector<int> vec(10);
   for (int i = 0; i < 10; ++i) {
@@ -111,6 +111,24 @@ TEST(vector_int_test, modify_vector) {
   }
   EXPECT_TRUE(vec.size() == 1);
   EXPECT_TRUE(vec.capacity() == 20);
+}
+
+TEST(vector_int_test, assign) {
+  sup::vector<int> vec0(5, 0);
+  sup::vector<int> vec1(10, 1);
+  sup::vector<int> vec2 (15, 2);
+  EXPECT_TRUE(vec0.size()==5);
+  EXPECT_TRUE(vec1.size() == 10);
+  EXPECT_TRUE(vec2.size() == 15);
+  
+  vec0.assign(vec1.begin(), vec1.end());
+  // Expected behaviors like std::vector
+  EXPECT_TRUE(vec0.size() == 10);
+  EXPECT_TRUE(vec0.capacity() == 10);
+
+  vec1.assign(vec2.begin(), vec2.end());
+  EXPECT_TRUE(vec1.size() == 15);
+  EXPECT_TRUE(vec1.capacity() == 15);
 }
 
 /******** Insert one element *******/

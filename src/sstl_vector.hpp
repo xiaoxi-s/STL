@@ -56,6 +56,7 @@ class vector {
   vector(int n, const_reference value);
   vector(long n, const_reference value);
   explicit vector(size_type n);
+  vector(vector& x);
   // Destructors
   ~vector();
 
@@ -84,6 +85,10 @@ class vector {
   iterator erase(iterator first, iterator last);
 
   void clear();
+
+  template <class InputIterator>
+  void assign(InputIterator first, InputIterator last);
+  void assign(size_type n, const value_type& value);
 
   iterator insert(iterator position, const_reference value);
   void insert(iterator position, size_type n, const_reference value);
@@ -175,6 +180,26 @@ vector<T, Alloc>::vector(size_type n) {
   fill_initialize(n, T());
 }
 
+/**
+ * @brief Construct a new vector<T, Alloc>::vector object
+ *
+ * @tparam T
+ * @tparam Alloc
+ * @param x
+ */
+template <class T, class Alloc>
+vector<T, Alloc>::vector(vector& x) {
+  start = data_allocator::allocate(x.size());
+  end_of_storage = start + x.size();
+  finish = uninitialized_copy(x.begin(), x.end(), start);
+}
+
+/**
+ * @brief Destroy the vector<T, Alloc>::vector object
+ *
+ * @tparam T - element type parameter
+ * @tparam Alloc - allocator type
+ */
 template <class T, class Alloc>
 vector<T, Alloc>::~vector() {
   sup::_destroy(start, finish);
@@ -415,6 +440,41 @@ typename vector<T, Alloc>::iterator vector<T, Alloc>::erase(iterator first,
 template <class T, class Alloc>
 void vector<T, Alloc>::clear() {
   erase(start, finish);
+}
+
+/**
+ * @brief assign new value to the vector
+ * 
+ * @tparam T - element type parameter
+ * @tparam Alloc - allocator type
+ * @tparam InputIterator - input iterator
+ * @param first - start of input iterator
+ * @param last - end of input iterator
+ */
+template <class T, class Alloc>
+template <class InputIterator>
+void vector<T, Alloc>::assign(InputIterator first, InputIterator last) {
+  this->~vector();
+  size_type n = last - first;
+  start = data_allocator::allocate(n);
+  finish = uninitialized_copy(first, last, start);
+  end_of_storage = start + n;
+}
+
+/**
+ * @brief assign new value to the vector
+ * 
+ * @tparam T - element type parameter
+ * @tparam Alloc - allocator type
+ * @param n - number of elements
+ * @param val - value
+ */
+template <class T, class Alloc>
+void vector<T, Alloc>::assign(size_type n, const value_type& value) {
+  this->~vector();
+  start = data_allocator::allocate(n);
+  finish = uninitialized_fill_n(start, n, value);
+  end_of_storage = start + n;
 }
 
 // insert
