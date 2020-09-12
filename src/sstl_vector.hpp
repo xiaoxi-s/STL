@@ -97,6 +97,8 @@ class vector {
 
   void swap(vector<T>& x);
 
+  allocator_type get_allocator() const;
+
  protected:
   typedef Alloc data_allocator;
   iterator start;
@@ -547,6 +549,17 @@ void vector<T, Alloc>::swap(vector<T>& x) {
   this->start = temp_start;
   this->finish = temp_finish;
   this->end_of_storage = temp_end_of_storage;
+}
+/**
+ * @brief return a allocator of the vector
+ * 
+ * @tparam T - element type parameter
+ * @tparam Alloc - allocator type
+ * @return allocator_type 
+ */
+template <class T, class Alloc>
+typename vector<T, Alloc>::allocator_type vector<T, Alloc>::get_allocator() const {
+  return data_allocator();
 }
 
 /************** Private (helper) methods **************/

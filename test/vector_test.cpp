@@ -113,6 +113,15 @@ TEST(vector_int_test, push_and_pop) {
   EXPECT_TRUE(vec.capacity() == 20);
 }
 
+/******** Clear ********/
+TEST(vector_int_test, clear) {
+  sup::vector<int> vec(10);
+  EXPECT_TRUE(vec.size() == 10);
+  vec.clear();
+  EXPECT_TRUE(vec.size() == 0);
+}
+
+
 TEST(vector_int_test, assign) {
   sup::vector<int> vec0(5, 0);
   sup::vector<int> vec1(10, 1);
@@ -378,12 +387,11 @@ TEST(vector_int_test, swap) {
   }
 }
 
-/******** Clear ********/
-TEST(vector_int_test, clear) {
-  sup::vector<int> vec(10);
-  EXPECT_TRUE(vec.size() == 10);
-  vec.clear();
-  EXPECT_TRUE(vec.size() == 0);
-}
+TEST (vector_int_test, get_allocator) {
+  sup::vector<int> v(10, 1);
 
+  sup::allocator<int> a = v.get_allocator();
+  int *p = a.allocate(10);
+  EXPECT_TRUE(p != nullptr);
+}
 }  // namespace vector_int_test
