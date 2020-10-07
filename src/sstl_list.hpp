@@ -21,6 +21,7 @@
  *  - no list_const_iterator implemented
  *  - no reverse_const_iterator
  *  - std::allocator_traits used
+ *  - std::distance()
  *  - no max_size()
  **/
 
@@ -104,7 +105,6 @@ class list {
   typedef T value_type;
   typedef Alloc allocator_type;
   typedef size_t size_type;
-
   typedef value_type& reference;
   typedef const value_type& const_reference;
 
@@ -211,7 +211,9 @@ class list {
 };
 
 template <class T, class Alloc>
-typename list<T, Alloc>::allocator_type list<T, Alloc>::get_allocator() const {}
+typename list<T, Alloc>::allocator_type list<T, Alloc>::get_allocator() const {
+  return allocator_type();
+}
 
 template <class T, class Alloc>
 typename list<T, Alloc>::iterator list<T, Alloc>::begin() {
@@ -241,9 +243,7 @@ bool list<T, Alloc>::empty() const {
 
 template <class T, class Alloc>
 typename list<T, Alloc>::size_type list<T, Alloc>::size() const {
-  size_type sz = 0;
-  sup::distance(begin(), end(), sz);
-  return sz;
+  return std::distance(begin(), end());
 }
 
 /******** element access ********/
@@ -260,15 +260,34 @@ typename list<T, Alloc>::reference list<T, Alloc>::back() {
 /********* modifiers ********/
 template <class T, class Alloc>
 template <class InputIterator>
-void list<T, Alloc>::assign(InputIterator first, InputIterator last) {}
+void list<T, Alloc>::assign(InputIterator first, InputIterator last) {
+
+}
 
 template <class T, class Alloc>
 void list<T, Alloc>::assign(size_type n, const value_type& val) {}
 
+/**
+ * @brief push an element at the front
+ * 
+ * @tparam T - element type parameter
+ * @tparam Alloc - allocator type
+ * @param val - value to be pushed in 
+ */
 template <class T, class Alloc>
-void list<T, Alloc>::push_front(const value_type& val) {}
+void list<T, Alloc>::push_front(const value_type& val) {
+  insert(begin(), val);
+}
+/**
+ * @brief pop one element from the front
+ * 
+ * @tparam T - element type parameter
+ * @tparam Alloc - allocator type
+ */
 template <class T, class Alloc>
-void list<T, Alloc>::pop_front() {}
+void list<T, Alloc>::pop_front() {
+  
+}
 /**
  * @brief push an element at the back of val
  * 
