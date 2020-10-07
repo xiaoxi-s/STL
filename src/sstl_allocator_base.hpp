@@ -1,11 +1,11 @@
 #ifndef _SSTL_ALLOCATOR_BASE_H
 #define _SSTL_ALLOCATOR_BASE_H
 
+#include <new>
+
 /**
  * @author Xiaoxi Sun
  **/
-
-#include <new>
 
 /**
  * Concepts
