@@ -286,7 +286,7 @@ void list<T, Alloc>::push_front(const value_type& val) {
  */
 template <class T, class Alloc>
 void list<T, Alloc>::pop_front() {
-  
+  erase(begin());
 }
 /**
  * @brief push an element at the back of val
@@ -300,7 +300,10 @@ void list<T, Alloc>::push_back(const value_type& val) {
   insert(end(), val);
 }
 template <class T, class Alloc>
-void list<T, Alloc>::pop_back() {}
+void list<T, Alloc>::pop_back() {
+  iterator tmp = end();
+  erase(--tmp);
+}
 
 /**
  * @brief insert an element before the element pointed by position
@@ -330,7 +333,14 @@ void list<T, Alloc>::insert(iterator position, InputIterator first,
                             InputIterator last) {}
 
 template <class T, class Alloc>
-typename list<T, Alloc>::iterator list<T, Alloc>::erase(iterator position) {}
+typename list<T, Alloc>::iterator list<T, Alloc>::erase(iterator position) {
+  link_type curr = position->next;
+  position->prev->next = position->next;
+  position->next->prev = position->prev;
+  destory_node(position);
+
+  return curr;
+}
 
 template <class T, class Alloc>
 typename list<T, Alloc>::iterator list<T, Alloc>::erase(iterator first,
