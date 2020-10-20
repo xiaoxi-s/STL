@@ -8,11 +8,11 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 - Build: gcc 9.3.0 + CMake 3.16.3
 - Editor: VSCode
 
-# Current Situations
+# Core Sources Implementation
  - Allocators finished
  - Memory initialization library finished
- - `reverse_iterator` and arithmatics is not implemented. 
-
+ - `vector`: finished
+ - `list`: on-going
 # Next Step
 
 - Study containers
@@ -23,12 +23,15 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 - `iterator`: finished
 - `construct`: finished
 - `uninitialized`: finished
+- `vector`: finished
+- `list`: on-going
 
 # Considerations
 
  - Multi-threading is not considered. 
  - Alignment issues are not considered.
  - The source uses some standard libraries (listed below) for brevity. 
+ - `reverse_iterator` and arithmatics is not implemented. 
 
 ## Standard Libraries used
 
