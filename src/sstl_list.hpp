@@ -191,7 +191,7 @@ class list {
  protected:
   // these functions are for convenience & efficiency
   link_type get_node() { return list_node_allocator::allocate(1); }
-  void put_node(link_type p) { list_node_allocator::deallocate(p); }
+  void put_node(link_type p) { list_node_allocator::deallocate(p, 1); }
   link_type create_node(const T& x) {
     link_type p = get_node();
     sup::_construct(&p->data, x);
@@ -243,7 +243,13 @@ bool list<T, Alloc>::empty() const {
 
 template <class T, class Alloc>
 typename list<T, Alloc>::size_type list<T, Alloc>::size() const {
-  return std::distance(begin(), end());
+  size_type result = 0;
+  iterator it = this->node;
+
+  while (it != this->node->prev) 
+    ++result, ++it;
+
+  return result;
 }
 
 /******** element access ********/
@@ -334,10 +340,10 @@ void list<T, Alloc>::insert(iterator position, InputIterator first,
 
 template <class T, class Alloc>
 typename list<T, Alloc>::iterator list<T, Alloc>::erase(iterator position) {
-  link_type curr = position->next;
-  position->prev->next = position->next;
-  position->next->prev = position->prev;
-  destory_node(position);
+  link_type curr = position.node;
+  curr->prev->next = curr->next;
+  curr->next->prev = curr->prev;
+  destory_node(curr);
 
   return curr;
 }
