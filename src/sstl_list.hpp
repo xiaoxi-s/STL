@@ -210,37 +210,88 @@ class list {
   link_type node;
 };
 
+/**
+ * @brief get allocator
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @return list<T, Alloc>::allocator_type 
+ */
 template <class T, class Alloc>
 typename list<T, Alloc>::allocator_type list<T, Alloc>::get_allocator() const {
   return allocator_type();
 }
 
+/**
+ * @brief begin iterator
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @return list<T, Alloc>::iterator 
+ */
 template <class T, class Alloc>
 typename list<T, Alloc>::iterator list<T, Alloc>::begin() {
   return (node->next);
 }
 
+/**
+ * @brief end iterator
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @return list<T, Alloc>::iterator 
+ */
 template <class T, class Alloc>
 typename list<T, Alloc>::iterator list<T, Alloc>::end() {
   return node;
 }
 
+/**
+ * @brief reverse begin iterator
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @return list<T, Alloc>::reverse_iterator 
+ */
 template <class T, class Alloc>
 typename list<T, Alloc>::reverse_iterator list<T, Alloc>::rbegin() {
   return node->prev;
 }
 
+/**
+ * @brief reverse begin iterator
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @return list<T, Alloc>::reverse_iterator 
+ */
 template <class T, class Alloc>
 typename list<T, Alloc>::reverse_iterator list<T, Alloc>::rend() {
   return node;
 }
 
 /******** Size ********/
+
+/**
+ * @brief Retur whether this list is empty
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @return true 
+ * @return false 
+ */
 template <class T, class Alloc>
 bool list<T, Alloc>::empty() const {
   return node->next == node;
 }
 
+/**
+ * @brief return the size of the list
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @return list<T, Alloc>::size_type 
+ */
 template <class T, class Alloc>
 typename list<T, Alloc>::size_type list<T, Alloc>::size() const {
   size_type result = 0;
@@ -253,23 +304,55 @@ typename list<T, Alloc>::size_type list<T, Alloc>::size() const {
 }
 
 /******** element access ********/
+
+/**
+ * @brief Return the reference to the first element
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @return list<T, Alloc>::reference 
+ */
 template <class T, class Alloc>
 typename list<T, Alloc>::reference list<T, Alloc>::front() {
   return *begin();
 }
 
+/**
+ * @brief return the reference to last element 
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @return list<T, Alloc>::reference 
+ */
 template <class T, class Alloc>
 typename list<T, Alloc>::reference list<T, Alloc>::back() {
   return *(--end());
 }
 
 /********* modifiers ********/
+/**
+ * @brief create a list of elements specified by range [first, last)
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @tparam InputIterator 
+ * @param first 
+ * @param last 
+ */
 template <class T, class Alloc>
 template <class InputIterator>
 void list<T, Alloc>::assign(InputIterator first, InputIterator last) {
 
 }
 
+/**
+ * @brief create a list of n elements of vals
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @param n 
+ * @param val 
+ */
 template <class T, class Alloc>
 void list<T, Alloc>::assign(size_type n, const value_type& val) {}
 
@@ -305,6 +388,12 @@ template <class T, class Alloc>
 void list<T, Alloc>::push_back(const value_type& val) {
   insert(end(), val);
 }
+/**
+ * @brief pop one element out from the back of the list
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ */
 template <class T, class Alloc>
 void list<T, Alloc>::pop_back() {
   iterator tmp = end();
@@ -338,6 +427,14 @@ template <class InputIterator>
 void list<T, Alloc>::insert(iterator position, InputIterator first,
                             InputIterator last) {}
 
+/**
+ * @brief remove and destory the element pointed by position
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @param position 
+ * @return list<T, Alloc>::iterator 
+ */
 template <class T, class Alloc>
 typename list<T, Alloc>::iterator list<T, Alloc>::erase(iterator position) {
   link_type curr = position.node;
@@ -352,14 +449,40 @@ template <class T, class Alloc>
 typename list<T, Alloc>::iterator list<T, Alloc>::erase(iterator first,
                                                         iterator last) {}
 
+/**
+ * @brief swap the content of two lists
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @param x - another list
+ */
 template <class T, class Alloc>
-void list<T, Alloc>::swap(list& x) {}
+void list<T, Alloc>::swap(list& x) {
+  link_type temp = x.node;
+  x.node = this->node;
+  this->node = temp;
+}
 
 template <class T, class Alloc>
 void list<T, Alloc>::resize(size_type n, value_type val) {}
 
+/**
+ * @brief clear the list
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ */
 template <class T, class Alloc>
-void list<T, Alloc>::clear() {}
+void list<T, Alloc>::clear() {
+  link_type curr = node->next;
+  while (curr != node->prev) {
+    link_type tmp = curr;
+    curr = curr->next;
+    destory_node(tmp);
+  }
+  node->prev = node;
+  node->next = node;
+}
 
 /******** Operations ********/
 template <class T, class Alloc>
@@ -370,12 +493,45 @@ template <class T, class Alloc>
 void list<T, Alloc>::splice(iterator position, list& x, iterator first,
                             iterator last) {}
 
+/**
+ * @brief remove all vals
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @param val 
+ */
 template <class T, class Alloc>
-void list<T, Alloc>::remove(const value_type& val) {}
+void list<T, Alloc>::remove(const value_type& val) {
+  iterator curr = begin();
+  iterator last = end();
+  while (curr != last) {
+    iterator tmp = curr;
+    ++curr;
+    if (*tmp == val) {
+      erase(tmp);
+    }
+  }
+}
 template <class T, class Alloc>
 template <class Predicate>
-void list<T, Alloc>::remove_if(Predicate pred) {}
+void list<T, Alloc>::remove_if(Predicate pred) {
+  iterator curr = begin();
+  iterator last = end();
+  while (curr != last) {
+    iterator tmp = curr;
+    ++curr;
+    if (pred(*tmp)) {
+      erase(tmp);
+    }
+  }
+}
 
+/**
+ * @brief remove consecutive values
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ */
 template <class T, class Alloc>
 void list<T, Alloc>::unique() {}
 
