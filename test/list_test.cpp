@@ -59,5 +59,77 @@ TEST(list_int_test, pop_push_back) {
   EXPECT_TRUE(l.size() == 0);
 }
 
+TEST(list_int_test, remove_test) {
+  sup::list<int> l;
+  for (int i = 0; i < 10; ++i) {
+    l.push_back(127);
+  }
+  EXPECT_TRUE(l.size() == 10);
+  l.remove(127);
+  EXPECT_TRUE(l.size() == 0);
+}
+
+TEST(list_int_test, remove_if_test) {
+  sup::list<int> l;
+  for (int i = 0; i < 10; ++i) {
+    l.push_back(i);
+  }
+  EXPECT_TRUE(l.size() == 10);
+  for (int i = 0; i < 10; ++i) {
+    l.remove_if([] (int n) {return n%2 == 0;});
+  }
+  EXPECT_TRUE(l.size() == 5);
+}
+
+TEST(list_int_test, test_clear) {
+  sup::list<int> l;
+  for (int i = 0; i < 10; ++i) {
+    l.push_back(i);
+  }
+  EXPECT_TRUE(l.size() == 10);
+  l.clear();
+  EXPECT_TRUE(l.size() == 0);
+
+  for (int i = 0; i < 10; ++i) {
+    l.push_back(i);
+  }
+  EXPECT_TRUE(l.size() == 10);
+  sup::list<int>::iterator it = l.begin();
+    for (int i = 0; i < 10; ++i) {
+    EXPECT_TRUE(*it == i) ;
+    ++it;
+  }
+}
+
+TEST(list_int_test, swap_test) {
+  sup::list<int> l1;
+  sup::list<int> l2;
+  for (int i = 0; i < 10; ++i) {
+    l1.push_back(i);
+  }
+
+  for (int i = 20; i < 25; ++i){
+    l2.push_back(i);
+  }
+
+  EXPECT_TRUE(l1.size() == 10);
+  EXPECT_TRUE(l2.size() == 5);
+
+  l1.swap(l2);
+
+  EXPECT_TRUE(l1.size() == 5);
+  EXPECT_TRUE(l2.size() == 10);
+
+  sup::list<int>::iterator it = l2.begin();
+  for (int i = 0; i < 10; ++i) {
+    EXPECT_TRUE(*it == i);
+    ++it;
+  }
+  it = l1.begin();
+  for (int i = 20; i < 25; ++i){
+    EXPECT_TRUE(*it == i);
+    ++it;
+  }
+}
 
 }
