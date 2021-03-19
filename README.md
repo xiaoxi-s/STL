@@ -1,47 +1,54 @@
-# STL
+## STL
 
 Implement basic algorithm, adaptor, container, iterator, functors in STL that are easier to understand. There would be concepts & questions related with each file based on the concepts learned from implementation. 
 
-## Environment
+### Environment
 
 - System: Ubuntu 20.04 LTS
 - Build: gcc 9.3.0 + CMake 3.16.3
 - Editor: VSCode
 
-# Core Sources Implementation
-## Utily Functions
+
+## Takeaways
+ - traits methods
+ - division of trivial & non-trivial objects for performance
+ - quick sort for list
+
+
+## Core Sources Implementation
+### Utily Functions
  - Allocators finished
  - Memory initialization library finished
 
-## Data Structures
+### Data Structures
  - `vector`: finished
  - `list`: finished
  - `deque`: on-going
 
-# Next Step
+## Next Step
 
 - Study containers
 
-# Test
+## Test
 
-## Utily Functions
+### Utily Functions
 - `allocator`: allocator unfinished; base finished
 - `uninitialized`: finished
 - `iterator`: finished
 - `construct`: finished
 
-## Data Structures
+### Data Structures
 - `vector`: finished
 - `list`: finished
 - `deque`: on-going
 
-# Considerations
+## Considerations
 
  - Multi-threading is not considered. 
  - Alignment issues are not considered.
  - The source uses some standard libraries (listed below) for brevity. 
 
-## Standard Libraries used
+### Standard Libraries used
 
 This part records the standard libraries that are not currently implemented, while have to be used. 
 
