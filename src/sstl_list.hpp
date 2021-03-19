@@ -14,7 +14,7 @@
 
 /**
  * Concepts:
- *
+ *   Very interesting Quick Sort implementation!
  **/
 
 /**
