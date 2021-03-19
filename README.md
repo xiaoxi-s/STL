@@ -24,14 +24,14 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 - `construct`: finished
 - `uninitialized`: finished
 - `vector`: finished
-- `list`: on-going
+- `list`: finished
+- `deque`: on-going
 
 # Considerations
 
  - Multi-threading is not considered. 
  - Alignment issues are not considered.
  - The source uses some standard libraries (listed below) for brevity. 
- - `reverse_iterator` and arithmatics is not implemented. 
 
 ## Standard Libraries used
 
@@ -65,7 +65,6 @@ This part records the standard libraries that are not currently implemented, whi
 
 - `sstl_uninitialized.hpp`
   - Sources: None
-
   - Functions: 
     - `std::__addressof()`
     - `std::iterator_traits()`
@@ -81,3 +80,9 @@ This part records the standard libraries that are not currently implemented, whi
     - `std::copy_backward`
     - `std::is_integral<>`
     - `std::fill`
+
+- `sstl_list.hpp`
+  - Sources: None
+  - Functions: 
+    - `std::__is_integer`
+    - `std::allocator_traits`
