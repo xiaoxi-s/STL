@@ -9,20 +9,28 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 - Editor: VSCode
 
 # Core Sources Implementation
+## Utily Functions
  - Allocators finished
  - Memory initialization library finished
+
+## Data Structures
  - `vector`: finished
- - `list`: on-going
+ - `list`: finished
+ - `deque`: on-going
+
 # Next Step
 
 - Study containers
 
 # Test
 
+## Utily Functions
 - `allocator`: allocator unfinished; base finished
+- `uninitialized`: finished
 - `iterator`: finished
 - `construct`: finished
-- `uninitialized`: finished
+
+## Data Structures
 - `vector`: finished
 - `list`: finished
 - `deque`: on-going
