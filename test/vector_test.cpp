@@ -122,14 +122,14 @@ TEST(vector_int_test, clear) {
 }
 
 
-TEST(vector_int_test, assign) {
+TEST(vector_int_test, assign_with_range) {
   sup::vector<int> vec0(5, 0);
   sup::vector<int> vec1(10, 1);
   sup::vector<int> vec2 (15, 2);
   EXPECT_TRUE(vec0.size()==5);
   EXPECT_TRUE(vec1.size() == 10);
   EXPECT_TRUE(vec2.size() == 15);
-  
+
   vec0.assign(vec1.begin(), vec1.end());
   // Expected behaviors like std::vector
   EXPECT_TRUE(vec0.size() == 10);
@@ -138,6 +138,15 @@ TEST(vector_int_test, assign) {
   vec1.assign(vec2.begin(), vec2.end());
   EXPECT_TRUE(vec1.size() == 15);
   EXPECT_TRUE(vec1.capacity() == 15);
+}
+
+TEST(vector_int_test, assign_with_values) {
+  sup::vector<int> vec0(5, 0);
+  vec0.assign(10, 999);
+  EXPECT_TRUE(vec0.size() == 10);
+  for (size_t i = 0; i < vec0.size(); ++i) {
+    EXPECT_TRUE(vec0[i] == 999);
+  }
 }
 
 /******** Insert one element *******/

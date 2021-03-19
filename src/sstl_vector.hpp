@@ -26,6 +26,7 @@
  *  - std::is_integral<> used
  *  - std::fill used
  *  - const overload not implemented
+ *  - std::__is_integer, std::__true_type, and std::__false_type used
  **/
 
 namespace sup {
@@ -86,9 +87,8 @@ class vector {
 
   void clear();
 
-  template <class InputIterator>
-  void assign(InputIterator first, InputIterator last);
-  void assign(size_type n, const value_type& value);
+  template<class InputIterator1, class InputIterator2>
+  void assign(InputIterator1 first, InputIterator2 last);
 
   iterator insert(iterator position, const_reference value);
   void insert(iterator position, size_type n, const_reference value);
@@ -114,6 +114,11 @@ class vector {
   void insert_aux(iterator position, Integer n, const_reference value,
                   std::true_type);
   void deallocate();
+
+  template<class InputIterator1, class InputIterator2>
+  void assign_aux(InputIterator1 first, InputIterator2 last, std::__false_type);
+  template<class Size>
+  void assign_aux(Size n, const T& value, std::__true_type);
 
   iterator allocate_and_fill(size_type n, const T& value);
 
@@ -444,6 +449,15 @@ void vector<T, Alloc>::clear() {
   erase(start, finish);
 }
 
+// assign vector to the current vector based on input types
+template <class T, class Alloc>
+template<class InputIterator1, class InputIterator2>
+void vector<T, Alloc>::assign(InputIterator1 first, InputIterator2 last) {
+  typedef typename std::__is_integer<InputIterator1>::__type _Integral;
+
+  assign_aux(first, last, _Integral());
+}
+
 /**
  * @brief assign new value to the vector
  * 
@@ -454,8 +468,8 @@ void vector<T, Alloc>::clear() {
  * @param last - end of input iterator
  */
 template <class T, class Alloc>
-template <class InputIterator>
-void vector<T, Alloc>::assign(InputIterator first, InputIterator last) {
+template <class InputIterator1, class InputIterator2>
+void vector<T, Alloc>::assign_aux(InputIterator1 first, InputIterator2 last, std::__false_type) {
   this->~vector();
   size_type n = last - first;
   start = data_allocator::allocate(n);
@@ -472,7 +486,8 @@ void vector<T, Alloc>::assign(InputIterator first, InputIterator last) {
  * @param val - value
  */
 template <class T, class Alloc>
-void vector<T, Alloc>::assign(size_type n, const value_type& value) {
+template<class Size>
+void vector<T, Alloc>::assign_aux(Size n, const T& value, std::__true_type) {
   this->~vector();
   start = data_allocator::allocate(n);
   finish = uninitialized_fill_n(start, n, value);
