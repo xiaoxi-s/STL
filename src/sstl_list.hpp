@@ -126,6 +126,10 @@ class list {
     node->next = node;
     node->prev = node;
   }
+  ~list() {
+    clear();
+    list_node_allocator::deallocate(node, 1);
+  }
 
   /******** Iterators ********/
   iterator begin();
