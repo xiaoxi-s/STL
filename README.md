@@ -13,6 +13,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - traits methods
  - division of trivial & non-trivial objects for performance
  - quick sort for list
+ - the range specification [first, last) has many advantages
 
 
 ## Core Sources Implementation
@@ -23,11 +24,14 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 ### Data Structures
  - `vector`: finished
  - `list`: finished
- - `deque`: on-going
+ - `deque`: finished
+ - `stack`: on-going
+
 
 ## Next Step
 
 - Study containers
+
 
 ## Test
 
@@ -40,7 +44,9 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 ### Data Structures
 - `vector`: finished
 - `list`: finished
-- `deque`: on-going
+ - `deque`: finished
+ - `stack`: on-going
+
 
 ## Considerations
 
@@ -97,7 +103,14 @@ This part records the standard libraries that are not currently implemented, whi
     - `std::fill`
 
 - `sstl_list.hpp`
-  - Sources: None
+  - Sources: 
+    - `Type Traits`
   - Functions: 
     - `std::__is_integer`
     - `std::allocator_traits`
+
+- `sstl_deque.hpp`
+  - Sources: None
+  - Functions: 
+    - `std::copy`
+    - `std::copy_backward`
