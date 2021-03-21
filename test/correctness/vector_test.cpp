@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/sstl_vector.hpp"
+#include "../../src/sstl_vector.hpp"
 
 // Tests for string or other types would be
 // ensured by construct_test & uninitialize_test

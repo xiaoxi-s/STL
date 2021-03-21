@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-#include "../src/sstl_uninitialized.hpp"
+#include "../../src/sstl_uninitialized.hpp"
 
 namespace uninitialized_test {
 

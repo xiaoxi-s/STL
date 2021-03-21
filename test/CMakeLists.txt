@@ -1,17 +1,20 @@
 cmake_minimum_required(VERSION 3.8)
 
-set(THIS STL_TESTS)
+add_subdirectory("correctness")
+# add_subdirectory("performance")
 
-file(GLOB SOURCES "*.cpp")
+# set(THIS STL_TESTS)
 
-add_executable(${THIS} ${SOURCES})
+# file(GLOB SOURCES "*.cpp")
 
-target_link_libraries(${THIS} PUBLIC
-    gtest_main
-    STL
-)
+# add_executable(${THIS} ${SOURCES})
 
-add_test(
-    NAME ${THIS}
-    COMMAND ${THIS}
-)
+# target_link_libraries(${THIS} PUBLIC
+#     gtest_main
+#     STL
+# )
+
+# add_test(
+#     NAME ${THIS}
+#     COMMAND ${THIS}
+# )

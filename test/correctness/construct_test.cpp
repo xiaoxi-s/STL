@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <stdlib.h>
 
-#include "../src/sstl_construct.hpp"
-#include "../src/sstl_allocator.hpp"
+#include "../../src/sstl_construct.hpp"
+#include "../../src/sstl_allocator.hpp"
 
 namespace construct_test {
 

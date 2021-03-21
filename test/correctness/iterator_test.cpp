@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/sstl_iterator.hpp"
+#include "../../src/sstl_iterator.hpp"
 
 namespace iterator_test {
 

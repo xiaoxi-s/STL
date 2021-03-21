@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/sstl_deque.hpp"
+#include "../../src/sstl_deque.hpp"
 
 
 namespace deque_test {

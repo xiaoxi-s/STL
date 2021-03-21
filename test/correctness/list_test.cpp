@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/sstl_list.hpp"
+#include "../../src/sstl_list.hpp"
 
 namespace list_iterator_int_test {
 TEST(list_iterator_int_test, test_trait) {
