@@ -53,10 +53,9 @@ class vector {
 
   /******** Constructors ********/
   vector();
-  vector(size_type n, const_reference value);
-  vector(int n, const_reference value);
-  vector(long n, const_reference value);
   explicit vector(size_type n);
+  template<class InputIterator1, class InputIterator2>
+  vector(InputIterator1 first, InputIterator2 last);
   vector(vector& x);
   // Destructors
   ~vector();
@@ -77,6 +76,7 @@ class vector {
   /******** Element access ********/
   reference operator[](size_type n);
   reference front();
+  const_reference front() const;
   reference back();
 
   void push_back(const_reference value);
@@ -139,45 +139,6 @@ vector<T, Alloc>::vector() : start(0), finish(0), end_of_storage(0) {}
 /**
  * @brief Construct a new vector<T, Alloc>::vector object
  *
- * @tparam T
- * @tparam Alloc
- * @param n - number of elements
- * @param value - values to be set
- */
-template <class T, class Alloc>
-vector<T, Alloc>::vector(size_type n, const_reference value) {
-  fill_initialize(n, value);
-}
-
-/**
- * @brief Construct a new vector<T, Alloc>::vector object
- *
- * @tparam T - element type  parameter
- * @tparam Alloc - allocator type
- * @param n - special type for int
- * @param value - values to be set
- */
-template <class T, class Alloc>
-vector<T, Alloc>::vector(int n, const_reference value) {
-  fill_initialize(n, value);
-}
-
-/**
- * @brief Construct a new vector<T, Alloc>::vector object
- *
- * @tparam T - element type  parameter
- * @tparam Alloc - allocator type
- * @param n - special type for long
- * @param value - values to be set
- */
-template <class T, class Alloc>
-vector<T, Alloc>::vector(long n, const_reference value) {
-  fill_initialize(n, value);
-}
-
-/**
- * @brief Construct a new vector<T, Alloc>::vector object
- *
  * @tparam T - element type  parameter
  * @tparam Alloc - allocator type
  * @param n - number of elements
@@ -188,11 +149,32 @@ vector<T, Alloc>::vector(size_type n) {
 }
 
 /**
+ * @brief The entrance of constructor based on two-paramters. The types of 
+ *  the parameters depend on the exact specialization of this function.
+ * 
+ * @tparam T 
+ * @tparam Alloc 
+ * @tparam InputIterator1 
+ * @tparam InputIterator2 
+ * @param first 
+ * @param last 
+ */
+template <class T, class Alloc>
+template<class InputIterator1, class InputIterator2>
+vector<T, Alloc>::vector(InputIterator1 first, InputIterator2 last) {
+  start = nullptr;
+  finish = nullptr;
+  end_of_storage = nullptr;
+
+    assign(first, last);
+}
+
+/**
  * @brief Construct a new vector<T, Alloc>::vector object
  *
- * @tparam T
- * @tparam Alloc
- * @param x
+ * @tparam T - element type  parameter
+ * @tparam Alloc - allocator type
+ * @param x - another vector
  */
 template <class T, class Alloc>
 vector<T, Alloc>::vector(vector& x) {
@@ -358,6 +340,18 @@ typename vector<T, Alloc>::reference vector<T, Alloc>::front() {
 }
 
 /**
+ * @brief return the const reference to the front element
+ *
+ * @tparam T - element type parameter
+ * @tparam Alloc - allocator type
+ * @return vector<T, Alloc>::reference - the element reference at the front
+ */
+template <class T, class Alloc>
+typename vector<T, Alloc>::const_reference vector<T, Alloc>::front() const {
+  return *start;
+}
+
+/**
  * @brief return the last element
  *
  * @tparam T - element type parameter
@@ -470,7 +464,9 @@ void vector<T, Alloc>::assign(InputIterator1 first, InputIterator2 last) {
 template <class T, class Alloc>
 template <class InputIterator1, class InputIterator2>
 void vector<T, Alloc>::assign_aux(InputIterator1 first, InputIterator2 last, std::__false_type) {
-  this->~vector();
+  if (!empty()) {
+    data_allocator::deallocate(start, this->size());
+  }
   size_type n = last - first;
   start = data_allocator::allocate(n);
   finish = uninitialized_copy(first, last, start);
@@ -488,7 +484,9 @@ void vector<T, Alloc>::assign_aux(InputIterator1 first, InputIterator2 last, std
 template <class T, class Alloc>
 template<class Size>
 void vector<T, Alloc>::assign_aux(Size n, const T& value, std::__true_type) {
-  this->~vector();
+  if (!empty()) {
+    data_allocator::deallocate(start, this->size());
+  }
   start = data_allocator::allocate(n);
   finish = uninitialized_fill_n(start, n, value);
   end_of_storage = start + n;
