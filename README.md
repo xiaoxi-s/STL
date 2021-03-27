@@ -114,3 +114,13 @@ This part records the standard libraries that are not currently implemented, whi
   - Functions: 
     - `std::copy`
     - `std::copy_backward`
+
+- `sstl_queue.hpp`
+  - Contains deque by default 
+
+- `sstl_stack.hpp`
+  - Contains deque by default
+
+- `sstl_forward_list.hpp`
+  - Sources: None
+  - Functions: None
