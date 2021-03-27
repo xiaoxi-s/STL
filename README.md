@@ -25,28 +25,35 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `vector`: finished
  - `list`: finished
  - `deque`: finished
- - `stack`: on-going
-
+ - `stack`: finished
+ - `queue`: finished
+ - `priority_queue`: finished
+ - `forward_list`: finished
 
 ## Next Step
 
-- Study containers
-
+- Study associative containers.
 
 ## Test
 
-### Utily Functions
+### Utilities
 - `allocator`: allocator unfinished; base finished
-- `uninitialized`: finished
-- `iterator`: finished
-- `construct`: finished
 
 ### Data Structures
 - `vector`: finished
 - `list`: finished
  - `deque`: finished
- - `stack`: on-going
+ - `stack`: finished
+ - `queue`: finished
+ - `priority_queue`: finished
+ - `forward_list`: finished
 
+
+### Algorithms
+- `uninitialized`: finished
+- `iterator`: finished
+- `construct`: finished
+- `heap`: finished
 
 ## Considerations
 
