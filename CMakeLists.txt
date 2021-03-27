@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-set(THIS STL)
+set(THIS SSTL)
 
 project(${THIS} C CXX)
 
@@ -18,6 +18,6 @@ file(GLOB HEADERS "src/*.hpp")
 
 add_library(${THIS} STATIC ${SOURCES} ${HEADERS})
 
-set_target_properties(STL PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(SSTL PROPERTIES LINKER_LANGUAGE CXX)
 
 add_subdirectory(test)
