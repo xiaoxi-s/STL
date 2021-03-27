@@ -13,6 +13,7 @@ enable_testing()
 add_subdirectory(googletest)
 
 file(GLOB SOURCES "src/*.cpp")
+file(GLOB SOURCES "src/*/*.cpp")
 file(GLOB HEADERS "src/*.hpp")
 
 add_library(${THIS} STATIC ${SOURCES} ${HEADERS})
