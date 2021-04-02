@@ -112,7 +112,7 @@ struct __fwd_list_iterator {
 
 template <class T>
 struct __fwd_list_const_iterator {
-  typedef __fwd_list_const_iterator<T>		_Self;
+  typedef __fwd_list_const_iterator<T>		_self;
   typedef const __fwd_list_node<T> _Node;
 
   typedef T value_type;
@@ -125,26 +125,25 @@ struct __fwd_list_const_iterator {
   __fwd_list_const_iterator(): node(nullptr) {}
   __fwd_list_const_iterator(__fwd_list_node_base* nd): node(nd) {}
 
-  
   reference operator*() const { return ((__fwd_list_node<T>*)node)->data; }
   pointer operator->() const 
   { return &(operator*()); }
 
-  _Self operator++() {
+  _self operator++() {
     node = node->next;
     return node;
   }
-  _Self operator++(int) {
-    _Self tmp = node; 
+  _self operator++(int) {
+    _self tmp = node; 
     node = node->next;
     return tmp;
   }
 
-  _Self next() {
+  _self next() {
     if (node) 
       return node->next;
     else 
-      return _Self(nullptr);
+      return _self(nullptr);
   }
 
   const __fwd_list_node_base* node; 
@@ -152,14 +151,14 @@ struct __fwd_list_const_iterator {
   /**
    * @brief operator overload for iterator comparison
    */
-  friend bool operator==(const _Self& x, const _Self& y) {
+  friend bool operator==(const _self& x, const _self& y) {
     return x.node == y.node;
   }
 
   /**
    * @brief operator overload for iterator comparison
    */
-  friend bool operator!=(const _Self& x, const _Self& y) {
+  friend bool operator!=(const _self& x, const _self& y) {
     return x.node != y.node;
   }
 };
