@@ -2,6 +2,7 @@
 #define _SSTL_ALLOCATOR_H
 
 #include "sstl_allocator_base.hpp"
+#include "naiveallocator.hpp"
 
 /**
  * @author Xiaoxi Sun
@@ -45,44 +46,27 @@
 
 namespace sup {
 
-template <class T>
-class allocator;
+class naive_allocator;
 
-// allocator specialize
-template <>
-class allocator<void> {
- public:
-  typedef size_t size_type;
-  typedef ptrdiff_t difference_type;
-  typedef void* pointer;
-  typedef const void* const_pointer;
-  typedef void value_type;
+#ifdef __SSTL_USE_MALLOC
+#  define __malloc_allocator alloc
+#else
+  typedef naive_allocator alloc;
+#endif
 
-  // rebind for allocating other types
-  template <typename T>
-  struct rebind {
-    typedef allocator<T> other;
-  };
-  
-  // construct & destory for allocator<void> need std::forward() to 
-  // pass on type parameter? 
-};
+template <class T, class Alloc>
+class simple_alloc;
 
-template <class T>
-class allocator : public allocator_base<T> {
- public:
-  typedef size_t size_type;
-  typedef ptrdiff_t difference_type;
-  typedef T* pointer;
-  typedef const T* const_pointer;
-  typedef T& reference;
-  typedef const T& const_reference;
+template <class T, class Alloc=naive_allocator>
+class simple_alloc {
+public:
   typedef T value_type;
+  typedef size_t size_type;
 
   // rebind for other usage.
-  template <class T2>
+  template <class T2, class Alloc2>
   struct rebind {
-    typedef allocator<T2> other;
+    typedef simple_alloc<T2, Alloc2> other;
   };
 
   /**
@@ -90,32 +74,46 @@ class allocator : public allocator_base<T> {
    *
    * BConstructors use _GLIBCXX20_CONSTEXPR and _GLIBCXX_NOTHROW
    **/
-  allocator() {}
-  allocator(const allocator& a) : allocator_base<T>(a) {}
+  simple_alloc() {}
+  simple_alloc(const simple_alloc& a) {}
 
   // can be copy constructed by other types of allocators...
   // although there might not be one...
-  template <class T2>
-  allocator(const allocator<T2> a) {}
+  template <class T2, class Alloc2>
+  simple_alloc(const simple_alloc<T2, Alloc2> a) {}
 
-  ~allocator() {}
+  ~simple_alloc() {}
 
+  static T* allocate(size_t n) {
+    return n == 0 ? nullptr : (T*) Alloc::allocate(n * sizeof(T));
+  }
+
+  static T* allocate() {
+    return (T*) Alloc::allocate(sizeof(T));
+  }
+
+  static void deallocate(T* p, size_type n) {
+    Alloc::deallocate((char*) p, n*sizeof(T));
+  }
+
+  static void deallocate(T* p) {
+    Alloc::deallocate((char*) p, sizeof(T));
+  }
   // Operator = overload here since C++11:
-
   // allocator interface requirements
-  friend bool operator==(const allocator&, const allocator&) { return true; }
-  friend bool operator!=(const allocator&, const allocator&) { return false; }
+  friend bool operator==(const simple_alloc&, const simple_alloc&) { return true; }
+  friend bool operator!=(const simple_alloc&, const simple_alloc&) { return false; }
 
   // inherit everthing else (! from GNU sources code)
 };
 
 // operator== interfaces
-template <class T1, class T2>
-bool operator==(const allocator<T1>&, const allocator<T2>&) {
+template <class T1, class Alloc1, class T2, class Alloc2>
+bool operator==(const simple_alloc<T1, Alloc1>&, const simple_alloc<T2, Alloc2>&) {
   return true;
 }
-template <class T1, class T2>
-bool operator!=(const allocator<T1>&, const allocator<T2>&) {
+template <class T1, class Alloc1, class T2, class Alloc2>
+bool operator!=(const simple_alloc<T1, Alloc1>&, const simple_alloc<T2, Alloc2>&) {
   return false;
 }
 

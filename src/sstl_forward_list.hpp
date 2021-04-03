@@ -163,7 +163,7 @@ struct __fwd_list_const_iterator {
   }
 };
 
-template<typename T, typename _Alloc=sup::allocator<T>>
+template<typename T, typename Alloc=alloc>
 class forward_list {
 public:
   typedef T value_type;
@@ -180,7 +180,7 @@ public:
 private:
   typedef __fwd_list_node<T> list_node;
   typedef __fwd_list_node_base list_node_base; 
-  typedef typename sup::allocator<__fwd_list_node<T>> list_node_allocator;
+  typedef typename sup::simple_alloc<__fwd_list_node<T>, Alloc> list_node_allocator;
 
 public: 
 

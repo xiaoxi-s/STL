@@ -103,23 +103,4 @@ TEST(construct_test, destory_multiple_trivial_class_based_on_size) {
   }
 }
 
-TEST(construct_test, destory_multiple_trivial_class_with_allocator){
-  sup::allocator<NonEmptyClass> a;
-  NonEmptyClass *it = a.allocate(10);
-
-  // construct value
-  for (int i = 0 ; i < 10; ++i) {
-    a.construct(it+i, 10);
-    EXPECT_TRUE(it->a == 10);
-  }
-
-  sup::_destroy(it, it+10, a);
-  for (int i = 0 ; i < 10 ; ++i) {
-    // Note: no destructor would be called.     
-    EXPECT_TRUE(it->a == 9); 
-  }
-
-  a.deallocate(it, 10);
-}
-
 }  // namespace construct_test

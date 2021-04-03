@@ -31,7 +31,7 @@
 
 namespace sup {
 
-template <class T, class Alloc = sup::allocator<T>>
+template <class T, class Alloc=alloc>
 class vector {
   /******** Public types and methods ********/
  public:
@@ -49,7 +49,7 @@ class vector {
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
 
-  typedef Alloc allocator_type;
+  typedef sup::simple_alloc<T, Alloc> allocator_type;
 
   /******** Constructors ********/
   vector();
@@ -100,7 +100,7 @@ class vector {
   allocator_type get_allocator() const;
 
  protected:
-  typedef Alloc data_allocator;
+  typedef simple_alloc<T, Alloc> data_allocator;
   iterator start;
   iterator finish;
   iterator end_of_storage;

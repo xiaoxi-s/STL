@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../../src/sstl_allocator_base.hpp"
+#include "../../src/sstl_allocator.hpp"
 
 // Need to implement: Tests for range construct & destruct
 
@@ -8,7 +8,7 @@ namespace allocator_base_test {
 
 // test allocate return 0 with 0 size
 TEST(allocator_base_test, allocate_return_null) {
-  sup::allocator_base<int> a;
+  sup::simple_alloc<int> a;
   int* ptr = a.allocate(0);
   EXPECT_TRUE(ptr == nullptr);
 }
@@ -28,7 +28,7 @@ int ClassForTest::destroy_times_ = 0;
 
 // test not calling constructor while allocating space
 TEST(allocator_base_test, not_call_constructor) {
-  sup::allocator_base<ClassForTest> a;
+  sup::simple_alloc<ClassForTest> a;
   ClassForTest* ptr = a.allocate(10);
   EXPECT_TRUE(ClassForTest::object_counter_ == 0);
 
@@ -36,21 +36,6 @@ TEST(allocator_base_test, not_call_constructor) {
   a.deallocate(ptr, 10);
   // deallocate without calling destructors
   EXPECT_TRUE(ClassForTest::destroy_times_ == 0);
-}
-
-// test on construct defined in allocator base
-TEST(allocator_base_test, construct_destroy) {
-  sup::allocator_base<ClassForTest> a;
-  ClassForTest* ptr = a.allocate(1);
-  // no construtor called
-  EXPECT_TRUE(ClassForTest::object_counter_ == 0);
-  a.construct(ptr, 1);
-  EXPECT_TRUE(ptr->a == 1);
-  
-  a.destroy(ptr);
-  // space is still there, but the object is destroyed
-  EXPECT_TRUE(ptr->a == 0);
-  EXPECT_TRUE(ClassForTest::object_counter_ == 0);
 }
 
 }  // namespace allocator_base_test

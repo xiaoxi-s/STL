@@ -96,13 +96,13 @@ template <class T>
 struct _list_const_iterator {};
 **/
 
-template <class T, class Alloc = sup::allocator<T>>
+template <class T, class Alloc=alloc>
 class list {
  protected:
-  typedef typename std::allocator_traits<Alloc> _T_alloc_traits;
+  typedef sup::simple_alloc<_list_node<T>, Alloc> list_node_allocator;
+  typedef typename std::allocator_traits<list_node_allocator> _T_alloc_traits;
   typedef _list_node<T> list_node;
   typedef _list_node<T>* link_type;
-  typedef sup::allocator<_list_node<T>> list_node_allocator;
 
  public:
   typedef T value_type;

@@ -339,13 +339,13 @@ inline void __rb_tree_erase_rebalance(
 }
 
 template <class Key, class Value, class KeyOfValue, 
-  class Compare, class Alloc=sup::allocator<__rb_tree_node<Value>>>
+  class Compare, class Alloc=alloc>
 class rb_tree {
 protected:
   typedef void* void_pointer;
   typedef __rb_tree_node_base* base_ptr;
   typedef __rb_tree_node<Value> rb_tree_node; 
-  typedef sup::allocator<__rb_tree_node<Value>> rb_tree_node_allocator;
+  typedef sup::simple_alloc<__rb_tree_node<Value>, Alloc> rb_tree_node_allocator;
   typedef __rb_tree_color_type color_type;
 
 public:

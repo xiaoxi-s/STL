@@ -50,34 +50,21 @@
 
 namespace sup {
 
-/**
- * This is a C++ standard allocator.
- *  - allocation calls operator new
- *  - release calls operator delete
- *
- * The base class for allocators in STL. Situations that are not
- * considered are:
- *  - multi-threading
- *  - alignment
- *
- * @tparam T type of the allocated object.
- **/
-template <class T>
-class allocator_base {
- public:
-  typedef size_t size_type;
-  typedef ptrdiff_t difference_type;
-  typedef T* pointer;
-  typedef const T* const_pointer;
-  typedef T& reference;
-  typedef const T& const_reference;
-  typedef T value_type;
 
+/**
+ * @brief a wrapper for new and delete allocator 
+ * 
+ * @tparam threads 
+ * @tparam inst 
+ */
+template <bool threads, int inst>
+class __simple_default_allocator_template {
+ public:
   // The container might have the need of allcoating
   // space for different types
-  template <class T2>
+  template <bool threads2, int inst2>
   struct rebind {
-    typedef allocator_base<T2> other;
+    typedef __simple_default_allocator_template<threads2, inst2> other;
   };
 
   /**
@@ -86,13 +73,15 @@ class allocator_base {
    * Notice that the source code of SGI does not specify some of the
    * type parameter (<T>). But I specify all of them for clarity.
    **/
-  allocator_base<T>() {}
-  allocator_base<T>(const allocator_base<T>&) {}
+  __simple_default_allocator_template<threads, inst>() {}
+  __simple_default_allocator_template<threads, inst>(
+    const __simple_default_allocator_template<threads, inst>&) {}
 
-  template <class T1>
-  allocator_base(const allocator_base<T1>&) {}
+  template <bool threads2, int inst2>
+  __simple_default_allocator_template(
+    const __simple_default_allocator_template<threads2, inst2>&) {}
 
-  ~allocator_base<T>() {}
+  ~__simple_default_allocator_template<threads, inst>() {}
 
   /**
    * Return the address of x
@@ -103,68 +92,61 @@ class allocator_base {
    * Macros used here:
    *  - _GLIBCXX_NOEXCEPT
    **/
-  static pointer address(reference x) { return std::__addressof(x); }
-
-  static const_pointer address(const_reference x) { return std::__addressof(x); }
 
   /**
    * Allocation function. This is what you are looking for!
    *
-   * @param n - number of elements
+   * @param n - number of bytes
    *
    * Macros used here:
    *  - __cpp_aligned_new
    **/
-  static pointer allocate(size_type n, const void* = static_cast<const void*>(0)) {
-    if (n > allocator_base<T>::max_size())
-      std::__throw_bad_alloc();  // this is an interesting function. study later
-
+  static void* allocate(size_t n) {
     // C++ standard does not specify this. Return nullptr for completeness
     if (n == 0) return nullptr;
 
     // There should be a branch dealing with alignment issues
 
-    return static_cast<T*>(::operator new(n * sizeof(T)));
+    return new char[n];
   }
 
   /**
    * p should not be a null pointer
    *
    * @param p - pointing to the space that would be deallocated
-   * @param size_type - I do not know why
+   * @param size_type - used for considering using first alloc or sub alloc
    **/
-  static void deallocate(pointer p, size_type) {
+  static void deallocate(char* p, size_t) {
     // there should be some alignment issues
-
-    ::operator delete(p);
+    delete [] p;
   }
 
   /**
    * @return the maximum allocable size
    * __PTRDIFF_MAX__
    **/
-  static size_type max_size() {
+  static size_t max_size() {
     // Might use __PTRDIFF_MAX
-    return size_t(-1) / sizeof(T);
+    return size_t(-1);
   }
 
   // For C++ 11 and later versions, STL uses std::forward.
   //
 
   // Here is the simmplified version:
-  static void construct(pointer p, T val) { ::new ((void*)p) T(val); }
-
-  static void destroy(pointer p) { p->~T(); }
-
   /**
    * Comparator
    **/
-  template <class T1>
-  friend bool operator==(const allocator_base&, const allocator_base<T1>&) {
+  template <bool threads1, int inst1, bool threads2, int inst2>
+  friend bool operator==(
+    const __simple_default_allocator_template<threads1, inst1>&, 
+    const __simple_default_allocator_template<threads2, inst2>&) {
     return true;
   }
-  template <class T1>
-  friend bool operator!=(const allocator_base&, const allocator_base<T1>&) {
+  template <bool threads1, int inst1, bool threads2, int inst2>
+  friend bool operator!=(
+    const __simple_default_allocator_template<threads1, inst1>&, 
+    const __simple_default_allocator_template<threads2, inst2>&) {
     return false;
   }
 };

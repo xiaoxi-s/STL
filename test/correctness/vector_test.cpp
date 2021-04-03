@@ -399,7 +399,7 @@ TEST(vector_int_test, swap) {
 TEST (vector_int_test, get_allocator) {
   sup::vector<int> v(10, 1);
 
-  sup::allocator<int> a = v.get_allocator();
+  sup::simple_alloc<int> a = v.get_allocator();
   int *p = a.allocate(10);
   EXPECT_TRUE(p != nullptr);
 }

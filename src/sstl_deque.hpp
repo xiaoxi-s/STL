@@ -118,7 +118,7 @@ struct __deque_iterator {
   map_pointer node; // to the map
 };
 
-template <class T, class Alloc=sup::allocator<T>, size_t BufSiz=0>
+template <class T, class Alloc=alloc, size_t BufSiz=0>
 class deque {
 public: 
   typedef T value_type;
@@ -162,8 +162,8 @@ public:
 
 protected:
   typedef pointer* map_pointer; 
-  typedef sup::allocator<value_type> data_allocator;
-  typedef sup::allocator<pointer> map_allocator;
+  typedef sup::simple_alloc<value_type, Alloc> data_allocator;
+  typedef sup::simple_alloc<pointer, Alloc> map_allocator;
 
 protected:
   // point to the first element and the last 
