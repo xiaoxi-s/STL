@@ -7,6 +7,7 @@
 #include "sstl_construct.hpp"
 #include "sstl_iterator_base.hpp"
 #include "sstl_stack.hpp"
+#include "sstl_iterator.hpp"
 
 #include <iostream>
 
@@ -142,7 +143,7 @@ struct __rb_tree_iterator: public __rb_tree_iterator_base {
   __rb_tree_iterator(const iterator& it) { node = it.node; }
 
   reference operator*() const { return ((link_type)node)->value_field; }
-  pointer operator->() const { return &(operator*()); } // ???
+  pointer operator->() const { return &(operator*()); }
 
   _self& operator++() {increment(); return*this;}
   _self operator++(int) {
@@ -158,7 +159,8 @@ struct __rb_tree_iterator: public __rb_tree_iterator_base {
     return tmp;
   }
 
-  friend bool operator==(__rb_tree_iterator x, __rb_tree_iterator y) {
+  friend bool operator==(
+    __rb_tree_iterator x, __rb_tree_iterator y) {
     return x.node == y.node;
   }
 };
@@ -360,6 +362,9 @@ public:
   typedef ptrdiff_t difference_type;
 
   typedef __rb_tree_iterator<value_type, reference, pointer> iterator;
+  typedef typename iterator::const_iterator const_iterator;
+  typedef sup::reverse_iterator<iterator> reverse_iterator;
+  typedef sup::reverse_iterator<const_iterator> const_reverse_iterator;
 
 protected:
   // helper functions for node
