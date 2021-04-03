@@ -30,6 +30,10 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `priority_queue`: finished
  - `forward_list`: finished
  - `rb_tree`: finished
+ - `set`: on-going
+ - `map`: on-going
+ - `multiset`: on-going
+ - `multimap`: on-going
 
 ## Next Step
 
@@ -38,7 +42,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 ## Test
 
 ### Utilities
-- `allocator`: allocator unfinished; base finished
+- `allocator`: Now use naive allocator (a wrapper for new and delete)
 
 ### Data Structures
 - `vector`: finished
@@ -49,6 +53,10 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `priority_queue`: finished
  - `forward_list`: finished
  - `rb_tree`: finished
+ - `set`: on-going
+ - `map`: on-going
+ - `multiset`: on-going
+ - `multimap`: on-going
 
 ### Algorithms
 - `uninitialized`: finished
