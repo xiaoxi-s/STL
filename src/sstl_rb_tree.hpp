@@ -397,8 +397,6 @@ protected:
     put_node(p);
   }
 
-// **/******************************************************
-
 protected:
   // data members
   size_type node_count; 
