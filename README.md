@@ -29,7 +29,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `queue`: finished
  - `priority_queue`: finished
  - `forward_list`: finished
- - `rb_tree`: on-going
+ - `rb_tree`: finished
 
 ## Next Step
 
@@ -48,7 +48,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `queue`: finished
  - `priority_queue`: finished
  - `forward_list`: finished
- - `rb_tree`: on-going
+ - `rb_tree`: finished
 
 ### Algorithms
 - `uninitialized`: finished
@@ -135,5 +135,5 @@ This part records the standard libraries that are not currently implemented, whi
 
 - `sstl_rb_tree.hpp`
   - Source: 
-    - <utility> (use std::pair)
+    - `utility` (use std::pair)
   - Functions: 
