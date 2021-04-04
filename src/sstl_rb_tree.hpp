@@ -656,7 +656,6 @@ public:
     // copy subtree
     header->parent = (base_ptr) __copy_subtree((link_type) t.header->parent);
     header->parent->parent = header;
-
     node_count = t.node_count;
 
     // finf min and max
@@ -700,6 +699,9 @@ public:
   iterator erase(iterator first, iterator last);
 
   void clear();
+
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& operator= 
+    (rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& t);
 };
 
 /**
@@ -938,6 +940,36 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
   }
 
   return last;
+}
+
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+rb_tree<Key, Value, KeyOfValue, Compare, Alloc>&
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::operator= 
+  (rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& t) {
+  this->clear();
+
+  if (t.empty())
+    return *this;
+
+  // copy subtree
+  header->parent = (base_ptr) __copy_subtree((link_type) t.header->parent);
+  header->parent->parent = header;
+  node_count = t.node_count;
+
+  // finf min and max
+  base_ptr cur =  header->parent;
+  while(cur->left != nullptr) {
+    cur = cur->left;
+  }
+  header->left = cur;
+  cur = header->parent;
+  while(cur->right != nullptr) {
+    cur = cur->right;
+  }
+  header->right = cur;
+
+  return *this;
 }
 
 /**
