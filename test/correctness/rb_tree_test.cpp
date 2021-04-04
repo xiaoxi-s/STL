@@ -16,7 +16,6 @@ struct get_first {
   }
 };
 
-
 TEST(rb_tree_int_str_test, construct) {
   sup::rb_tree<int, std::pair<int, std::string>, get_first<int, std::string>, std::less<int>> t;
 }
@@ -53,6 +52,94 @@ TEST(rb_tree_int_str_test, insert_equal_simple_and_size) {
   EXPECT_TRUE(t.size() == 20); // the size should be 20 this time
 }
 
+TEST(rb_tree_int_str_test, copy_construct) {
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>> t1;
+  
+  int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
+  int n = 10;
+  std::string str = "123";
+  for (int i = 0 ; i<n; ++i)
+    t1.insert_unique(std::make_pair(a[i], str));
+  
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>> t2(t1);
+  
+  auto it1 = t1.begin();
+  auto it2 = t2.begin();
+  EXPECT_TRUE(t1.size() == t2.size());
+
+  // same values
+  while (it1 != t1.end()) {
+    EXPECT_TRUE(*it1 == *it2);
+    ++it1;
+    ++it2;
+  }
+
+  // erase all
+  for (int i = 0 ; i<n; ++i)
+    t2.erase(a[i]);
+
+  EXPECT_TRUE(t2.size() == 0);
+
+  // check t2 could be inserted again
+  for (int i = 0 ; i<n; ++i)
+    t2.insert_unique(std::make_pair(a[i], str));
+  
+  it1 = t1.begin();
+  it2 = t2.begin();
+  while (it1 != t1.end()) {
+    EXPECT_TRUE(*it1 == *it2);
+    ++it1;
+    ++it2;
+  }
+}
+
+TEST(rb_tree_int_str_test, equal_operator_overloading) {
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>> t1;
+  
+  int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
+  int n = 10;
+  std::string str = "123";
+  for (int i = 0 ; i<n; ++i)
+    t1.insert_unique(std::make_pair(a[i], str));
+  
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>> t2;
+
+  // use = operator
+  t2 = t1;
+  
+  auto it1 = t1.begin();
+  auto it2 = t2.begin();
+  EXPECT_TRUE(t1.size() == t2.size());
+
+  // same values
+  while (it1 != t1.end()) {
+    EXPECT_TRUE(*it1 == *it2);
+    ++it1;
+    ++it2;
+  }
+
+  // erase all
+  for (int i = 0 ; i<n; ++i)
+    t2.erase(a[i]);
+
+  EXPECT_TRUE(t2.size() == 0);
+
+  // check t2 could be inserted again
+  for (int i = 0 ; i<n; ++i)
+    t2.insert_unique(std::make_pair(a[i], str));
+  
+  it1 = t1.begin();
+  it2 = t2.begin();
+  while (it1 != t1.end()) {
+    EXPECT_TRUE(*it1 == *it2);
+    ++it1;
+    ++it2;
+  }
+}
 
 TEST(rb_tree_int_str_test, insert_unique_range_and_size) {
   int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
