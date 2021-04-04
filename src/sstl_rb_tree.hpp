@@ -163,6 +163,11 @@ struct __rb_tree_iterator: public __rb_tree_iterator_base {
     __rb_tree_iterator x, __rb_tree_iterator y) {
     return x.node == y.node;
   }
+
+  friend bool operator!=(
+    __rb_tree_iterator x, __rb_tree_iterator y) {
+    return x.node != y.node;
+  }
 };
 
 // x->right is the node rotated up
@@ -401,6 +406,10 @@ protected:
     sup::_destroy(&(p->value_field));
     put_node(p);
   }
+  // copy a node
+  link_type copy_node(link_type p) {
+    return create_node(p->value_field);
+  }
 
 protected:
   // data members
@@ -494,6 +503,19 @@ protected:
   }
 
 private:
+  // copy tree aux
+  link_type __copy_subtree(link_type cur) {
+    link_type new_node = clone_node(cur);
+    if (cur->left != nullptr) {
+      new_node->left = __copy_subtree((link_type) cur->left); 
+      new_node->left->parent = new_node;
+    }
+    if (cur->right != nullptr) {
+      new_node->right = __copy_subtree((link_type) cur->right);
+      new_node->right->parent = new_node;
+    }
+    return new_node;
+  }
   // insert aux; x is to be inserted; y is its parent
   // returns an interator pointing to the inserted node
   iterator __insert(base_ptr x_, base_ptr y_, const value_type& val) {
@@ -531,43 +553,6 @@ private:
 
     ++node_count;
     return iterator(z);
-  }
-  // 
-  link_type __move(link_type x, link_type cur) {
-    if (x->parent != header) {
-      if (cur->parent->left == cur) {
-        cur->parent->left = cur->right;
-      } else {
-        cur->parent->right = cur->right;
-      }
-
-      cur->parent = x->parent;
-      if (x->parent->left == x) {
-        x->parent->left = cur;
-      } else {
-        x->parent->right = cur;
-      }
-    } else {
-      if (cur->parent->left == cur) {
-        cur->parent->left = cur->right;
-      } else {
-        cur->parent->right = cur->right;
-      }
-
-      cur->parent = x->parent;
-      if (x == x->parent->left) {
-        x->parent->left = cur;
-      } else if (x == x->parent->right) {
-        x->parent->right = cur;
-      }
-    }
-
-    value_type* tmp = x->value_field;
-    x->value_field = cur->value_field;
-    cur->value_field = tmp;
-
-    cur->left = x->left;
-    cur->right = x->right;
   }
   // erase the x node without rebalancing
   link_type __erase(base_ptr x) {
@@ -661,6 +646,32 @@ public:
   rb_tree(const Compare& comp = Compare()): node_count(0), key_compare(comp) { 
     init(); 
   }
+  rb_tree(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& t) {
+    init();
+    key_compare = t.key_compare;
+
+    if (t.empty())
+      return;
+
+    // copy subtree
+    header->parent = (base_ptr) __copy_subtree((link_type) t.header->parent);
+    header->parent->parent = header;
+
+    node_count = t.node_count;
+
+    // finf min and max
+    base_ptr cur =  header->parent;
+    while(cur->left != nullptr) {
+      cur = cur->left;
+    }
+    header->left = cur;
+    cur = header->parent;
+    while(cur->right != nullptr) {
+      cur = cur->right;
+    }
+    header->right = cur;
+  }
+
   ~rb_tree() {
     clear();
     put_node(header);
@@ -683,9 +694,11 @@ public:
   void insert_unique(InputIterator first, InputIterator last);
   template<class InputIterator>
   void insert_equal(InputIterator first, InputIterator last);
+
   iterator erase(iterator position);
   size_type erase(const Key& k);
   iterator erase(iterator first, iterator last);
+
   void clear();
 };
 
@@ -950,8 +963,7 @@ void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::clear() {
 
     cur = stk.top();
     if (cur->right == nullptr || cur->right == pre) {
-      sup::_destroy(&((link_type)cur)->value_field);
-      rb_tree_node_allocator::deallocate((link_type)cur, 1);
+      put_node((link_type) cur);
       stk.pop();
       pre = cur;
       cur = nullptr;
