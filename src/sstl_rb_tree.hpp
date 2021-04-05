@@ -270,7 +270,7 @@ inline void __rb_tree_erase_rebalance(
   __rb_tree_node_base* x, __rb_tree_node_base* parent, __rb_tree_node_base*& root) {
   // extract parent
   __rb_tree_node_base* other; 
-  // x is the root of an empty sub tree, or x's color is black
+  // x is the root of a sub tree, or x's color is black
   // and x is not a root
   while( ((!x) || x->color == __rb_tree_black) && x != root) {
     if (parent->left == x) { // x is on the left of its parent
@@ -658,7 +658,7 @@ public:
     header->parent->parent = header;
     node_count = t.node_count;
 
-    // finf min and max
+    // find min and max
     base_ptr cur =  header->parent;
     while(cur->left != nullptr) {
       cur = cur->left;
@@ -957,7 +957,7 @@ rb_tree<Key, Value, KeyOfValue, Compare, Alloc>&
   header->parent->parent = header;
   node_count = t.node_count;
 
-  // finf min and max
+  // find min and max
   base_ptr cur =  header->parent;
   while(cur->left != nullptr) {
     cur = cur->left;
