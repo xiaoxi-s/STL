@@ -29,7 +29,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `queue`: finished
  - `priority_queue`: finished
  - `forward_list`: finished
- - `rb_tree`: finished
+ - `rb_tree`: on-going
  - `set`: on-going
  - `map`: on-going
  - `multiset`: on-going
@@ -52,7 +52,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `queue`: finished
  - `priority_queue`: finished
  - `forward_list`: finished
- - `rb_tree`: finished
+ - `rb_tree`: on-going
  - `set`: on-going
  - `map`: on-going
  - `multiset`: on-going
@@ -145,3 +145,9 @@ This part records the standard libraries that are not currently implemented, whi
   - Source: 
     - `utility` (use std::pair)
   - Functions: 
+
+- `sstl_set.hpp`
+  - Source: None
+  - Functions: 
+    - `std::less` is used as the default template parameter for set
+    - `std::_Identity` is used as the template parameter for RB tree
