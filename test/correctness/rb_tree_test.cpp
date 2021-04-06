@@ -219,6 +219,61 @@ TEST(rb_tree_int_str_test, find) {
   }
 }
 
+TEST(rb_tree_int_str_test, count) {
+  int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
+  int n = 10;
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>> t;
+
+  // insert once
+  for (int i = 0 ; i<n; ++i) {
+    std::string str = std::to_string(a[i]);
+    t.insert_unique(std::make_pair(a[i], str));
+  }
+  
+  for (int i = 0; i < n; ++i) {
+    EXPECT_TRUE(t.count(a[i]) == 1);
+  }
+  
+  // insert twice
+  for (int i = 0 ; i<n; ++i) {
+    std::string str = std::to_string(a[i]);
+    t.insert_equal(std::make_pair(a[i], str));
+  }
+
+  for (int i = 0; i < n; ++i) {
+    EXPECT_TRUE(t.count(a[i]) == 2);
+  }
+}
+
+TEST(rb_tree_int_str_test, lower_upper_bound) {
+  int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
+  int n = 10;
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>> t;
+
+  // insert once
+  for (int i = 0 ; i<n; ++i) {
+    std::string str = std::to_string(a[i]);
+    t.insert_unique(std::make_pair(a[i], str));
+  }
+  
+  EXPECT_TRUE(t.lower_bound(0) == t.find(0));
+  EXPECT_TRUE(t.lower_bound(8) == t.find(8));
+  EXPECT_TRUE(t.lower_bound(11) == t.find(9));
+  EXPECT_TRUE(t.lower_bound(-1) == t.end());
+
+  // insert twice
+  for (int i = 0 ; i<n; ++i) {
+    std::string str = std::to_string(a[i]);
+    t.insert_equal(std::make_pair(a[i], str));
+  }
+
+  for (int i = 0; i < n; ++i) {
+    EXPECT_TRUE(t.count(a[i]) == 2);
+  }
+}
+
 TEST(rb_tree_int_str_test, clear) {
   int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
   int n = 10;

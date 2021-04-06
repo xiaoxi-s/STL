@@ -680,11 +680,28 @@ public:
   Compare key_comp() const { return key_compare;}
   iterator begin() const { return left_most(); }
   iterator end() const { return header; }
+  reverse_iterator rbegin() const { return iterator(header); }
+  reverse_iterator rend() const { return iterator(left_most()); }
   bool empty() const { return node_count == 0; }
   size_type size() const { return node_count; }
   size_type max_size() const { return size_type(-1); }
+  void swap(rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& t) {
+    link_type temp_header = t.header;
+    t.header = this->header;
+    this->header = t.header;
+    size_type temp_node_count = t.node_count;
+    t.node_count = node_count;
+    node_count = temp_node_count; 
+    link_type header; // a node "above" root
+    // no need to swap key_comp
+  }
 
-  iterator find(const Key& val);
+  iterator find(const Key& k);
+  size_type count(const Key& k);
+
+  iterator upper_bound(const Key& k) const;
+  iterator lower_bound(const Key& k) const;
+  std::pair<iterator, iterator> equal_range(const Key& k) const;
 
   /********* Modifiers *********/
   std::pair<iterator, bool> insert_unique(const value_type& val);
@@ -732,6 +749,105 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
     }
   }
 
+  return end();
+}
+
+/**
+ * @brief count the number of keys in the tree
+ * 
+ * @tparam Key - type
+ * @tparam Value - type
+ * @tparam KeyOfValue - construct key from value
+ * @tparam Compare - comparator for the key
+ * @tparam Alloc - allocator type
+ * @param k - the given key
+ * @return rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
+ *  - the numebr of occurance of the given  
+ */
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type 
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::count(const Key& k) {
+  size_type num = 0;
+  iterator it = find(k);
+  if (it == end()) 
+    return 0;
+  
+  if (it != left_most()) {
+    --it;
+    for (iterator temp_it = it; KeyOfValue() (*temp_it) == k; --temp_it) {
+      ++num;
+    }
+    ++it;
+  }
+  for (; KeyOfValue() (*it) == k; ++it) {
+    ++num;
+  }
+
+  return num;
+}
+
+/**
+ * @brief return the iterator pointing to the element with key 
+ *  next to the given key (based on the comparator).
+ * 
+ * @tparam Key - type
+ * @tparam Value - type
+ * @tparam KeyOfValue - construct key from value
+ * @tparam Compare - comparator for the key
+ * @tparam Alloc - allocator type
+ * @param k - the given key
+ * @return rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator 
+ *  - as in the brief
+ */
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::upper_bound(const Key& k) const {
+  // if every element goes before k 
+  // !!!!
+  // Implement this after implementing the general lower_bound & upper 
+  // bound algorithm
+  return end();
+}
+
+/**
+ * @brief return the iterator pointing to the element with key 
+ *  equal to the given key (based on the comparator). If there is 
+ *  no such an element, return the element with key next to the 
+ *  given key. (return equavilent or after)
+ * 
+ * @tparam Key - type
+ * @tparam Value - type
+ * @tparam KeyOfValue - construct key from value
+ * @tparam Compare - comparator for the key
+ * @tparam Alloc - allocator type
+ * @param k - the given key
+ * @return rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator 
+ *  - as in the brief
+ */
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const Key& k) const {
+  // if every element goes before k 
+  // !!!!
+  // Implement this after implementing the general lower_bound & upper 
+  // bound algorithm
+  return end();
+}
+
+/**
+ */
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+  std::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, 
+    typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator>
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const Key& k) const {
+  // if every element goes before k 
+  // !!!!
+  // Implement this after implementing the general lower_bound & upper 
+  // bound algorithm
   return end();
 }
 
