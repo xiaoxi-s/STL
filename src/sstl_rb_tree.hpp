@@ -699,17 +699,23 @@ public:
   iterator find(const Key& k);
   size_type count(const Key& k);
 
-  iterator upper_bound(const Key& k) const;
-  iterator lower_bound(const Key& k) const;
-  std::pair<iterator, iterator> equal_range(const Key& k) const;
+  iterator upper_bound(const Key& k);
+  iterator lower_bound(const Key& k);
+  const_iterator upper_bound(const Key& k) const;
+  const_iterator lower_bound(const Key& k) const;
+  std::pair<iterator, iterator> equal_range(const Key& k);
+  std::pair<const_iterator, const_iterator> equal_range(const Key& k) const;
 
   /********* Modifiers *********/
-  std::pair<iterator, bool> insert_unique(const value_type& val);
+  iterator insert_equal(iterator position, const value_type& val);
   iterator insert_equal(const value_type& val);
   template<class InputIterator>
-  void insert_unique(InputIterator first, InputIterator last);
-  template<class InputIterator>
   void insert_equal(InputIterator first, InputIterator last);
+
+  std::pair<iterator, bool> insert_unique(const value_type& val);
+  iterator insert_unique(iterator position, const value_type& val);
+  template<class InputIterator>
+  void insert_unique(InputIterator first, InputIterator last);
 
   iterator erase(iterator position);
   size_type erase(const Key& k);
@@ -737,19 +743,9 @@ template <class Key, class Value, class KeyOfValue,
   class Compare, class Alloc>
 typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator 
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const Key& k) {
-  link_type y = header;
-  link_type x = root();
-  while (x != 0) {
-    if (key_compare(k, key(x))) {
-      x = left(x);
-    } else if (key_compare(key(x), k)) {
-      x = right(x);
-    } else {
-      return iterator(x);
-    }
-  }
+  iterator lower = lower_bound(k);
 
-  return end();
+  return (lower == end() || key_compare(KeyOfValue() (*lower), k)) ? end(): lower; 
 }
 
 /**
@@ -769,27 +765,18 @@ template <class Key, class Value, class KeyOfValue,
 typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type 
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::count(const Key& k) {
   size_type num = 0;
-  iterator it = find(k);
-  if (it == end()) 
-    return 0;
-  
-  if (it != left_most()) {
-    --it;
-    for (iterator temp_it = it; KeyOfValue() (*temp_it) == k; --temp_it) {
-      ++num;
-    }
-    ++it;
-  }
-  for (; KeyOfValue() (*it) == k; ++it) {
-    ++num;
-  }
+  std::pair<iterator, iterator>p = equal_range(k);
 
+  while(p.first != p.second) 
+    ++p.first, ++num;
+  
   return num;
 }
 
 /**
  * @brief return the iterator pointing to the element with key 
- *  next to the given key (based on the comparator).
+ *  next to the given key (based on the comparator). return end() if 
+ *  there is no upper bound.
  * 
  * @tparam Key - type
  * @tparam Value - type
@@ -803,19 +790,55 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::size_type
 template <class Key, class Value, class KeyOfValue, 
   class Compare, class Alloc>
 typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::upper_bound(const Key& k) {
+  link_type pre = header;
+  link_type cur = (link_type) header->parent;
+  while (cur != nullptr) {
+    if (key_compare(k, KeyOfValue() (cur->value_field))) {
+      pre = cur;
+      cur = (link_type) cur->left;
+    } else 
+    cur = (link_type) cur->right;
+  }
+  return iterator(pre);
+}
+
+/**
+ * @brief return the const iterator pointing to the element with key 
+ *  next to the given key (based on the comparator). return end() if 
+ *  there is no upper bound
+ * 
+ * @tparam Key - type
+ * @tparam Value - type
+ * @tparam KeyOfValue - construct key from value
+ * @tparam Compare - comparator for the key
+ * @tparam Alloc - allocator type
+ * @param k - the given key
+ * @return rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator 
+ *  - as in the brief
+ */
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::upper_bound(const Key& k) const {
-  // if every element goes before k 
-  // !!!!
-  // Implement this after implementing the general lower_bound & upper 
-  // bound algorithm
-  return end();
+  link_type pre = header;
+  link_type cur = (link_type) header->parent;
+  while (cur != nullptr) {
+    if (key_compare(k, KeyOfValue() (cur->value_field))) {
+      pre = cur;
+      cur = (link_type) cur->left;
+    } else 
+    cur = (link_type) cur->right;
+  }
+  return const_iterator(pre);
 }
 
 /**
  * @brief return the iterator pointing to the element with key 
  *  equal to the given key (based on the comparator). If there is 
  *  no such an element, return the element with key next to the 
- *  given key. (return equavilent or after)
+ *  given key. (return equavilent or after). If there is no upper 
+ *  bound, return end().
  * 
  * @tparam Key - type
  * @tparam Value - type
@@ -829,26 +852,95 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
 template <class Key, class Value, class KeyOfValue, 
   class Compare, class Alloc>
 typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
-  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const Key& k) const {
-  // if every element goes before k 
-  // !!!!
-  // Implement this after implementing the general lower_bound & upper 
-  // bound algorithm
-  return end();
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const Key& k) {
+  link_type pre = header;
+  link_type cur = (link_type) header->parent;
+  while(cur != nullptr) {
+    if (!key_compare(KeyOfValue() (cur->value_field), k)) {
+      pre = cur;
+      cur = (link_type) cur->left;
+    } else 
+      cur = (link_type) cur->right;
+  }
+  return iterator(pre);
 }
 
 /**
+ * @brief return the const iterator pointing to the element with key 
+ *  equal to the given key (based on the comparator). If there is 
+ *  no such an element, return the element with key next to the 
+ *  given key. (return equavilent or after) If there is no upper 
+ *  bound, return end().
+ * 
+ * @tparam Key - type
+ * @tparam Value - type
+ * @tparam KeyOfValue - construct key from value
+ * @tparam Compare - comparator for the key
+ * @tparam Alloc - allocator type
+ * @param k - the given key
+ * @return rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator 
+ *  - as in the brief
+ */
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::lower_bound(const Key& k) const {
+  link_type pre = header;
+  link_type cur = (link_type) header->parent;
+  while(cur != nullptr) {
+    if (!key_compare(KeyOfValue() (cur->value_field), k)) {
+      pre = cur;
+      cur = (link_type) cur->left;
+    } else 
+      cur = (link_type) cur->right;
+  }
+  return const_iterator(pre);
+}
+
+/**
+ * @brief return the range in which the key of the elements equal 
+ *  to the given key
+ * 
+ * @tparam Key - type
+ * @tparam Value - type
+ * @tparam KeyOfValue - construct key from value
+ * @tparam Compare - comparator for the key
+ * @tparam Alloc - allocator type
+ * @param k - the given key
+ * @return std::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator,
+ *  typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator> -
+ *  the range iterator
  */
 template <class Key, class Value, class KeyOfValue, 
   class Compare, class Alloc>
   std::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, 
     typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator>
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const Key& k) {
+  
+  return std::make_pair(lower_bound(k), upper_bound(k));
+}
+
+/**
+ * @brief return the range (dentoed with const iterator) in which 
+ *  the key of the elements equal to the given key
+ * 
+ * @tparam Key - type
+ * @tparam Value - type
+ * @tparam KeyOfValue - construct key from value
+ * @tparam Compare - comparator for the key
+ * @tparam Alloc - allocator type
+ * @param k - the given key
+ * @return std::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator,
+ *  typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator> -
+ *  the range denoted with const iterator
+ */
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+  std::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator, 
+    typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator>
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::equal_range(const Key& k) const {
-  // if every element goes before k 
-  // !!!!
-  // Implement this after implementing the general lower_bound & upper 
-  // bound algorithm
-  return end();
+
+  return std::make_pair(lower_bound(k), upper_bound(k));
 }
 
 /**
@@ -901,14 +993,45 @@ void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_equal(InputIterator
 }
 
 /**
- * @brief insert an element of value val into the rb tree (with equal keys 
- *  not allowed)
+ * @brief  insert equal with hint (the iterator)
  * 
  * @tparam Key - type of the key
  * @tparam Value - type of the value
  * @tparam KeyOfValue - a functor returns key of the value
  * @tparam Compare - compare function type
  * @tparam Alloc - allocator type
+ * @param position - the hint, i.e. the position of the value 
+ *  to be inserted
+ * @param val - value of the inserted element
+ * @return iterator - to where the value is inserted
+ */
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator 
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_equal(iterator position, const Value& val) {
+  link_type y = (link_type) position.node->parent;
+  link_type x = (link_type) position.node;
+  while(x != nullptr) {
+    y = x;
+    x = key_compare(KeyOfValue()(val), key(x)) ? left(x) : right(x);
+  }
+
+  return __insert(x, y, val);
+}
+
+/**
+ * @brief insert an element of value val into the rb tree (with equal keys 
+ *  not allowed)
+ * 
+ * @tparam Key - type of the key
+ * @tparam Value - type of the value
+ * @tparam Key - type of the key
+ * @tparam Value - type of the value
+ * @tparam KeyOfValue - a functor returns key of the value
+ * @tparam Compare - compare function type
+ * @tparam Alloc - allocator type
+ * @param position - the hint, i.e. the position of the value 
+ *  to be inserted
  * @param val - value of the inserted element
  * @return std::<iterator, bool> - a pair of iterator and a bool var denoting 
  *  whether the inserted value is unique (or successfully inserted)
@@ -961,6 +1084,48 @@ void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(InputIterato
     insert_unique(*first);
     ++first;
   }
+}
+
+/**
+ * @brief  insert unique with hint (the iterator)
+ * 
+ * @tparam Key - type of the key
+ * @tparam Value - type of the value
+ * @tparam KeyOfValue - a functor returns key of the value
+ * @tparam Compare - compare function type
+ * @tparam Alloc - allocator type
+ * @param position - the hint, i.e. the position of the value 
+ *  to be inserted
+ * @param val - value of the inserted element
+ * @return iterator - to where the value is inserted
+ */
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator 
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(iterator position, const Value& val) {
+  // start with the hint!
+  link_type y = (link_type) position.node->parent;
+  link_type x = (link_type) position.node;
+  bool comp = true;
+  while(x != nullptr) {
+    y = x;
+    comp = key_compare(KeyOfValue()(val), key(x));
+    x = comp ? left(x) : right(x);
+  } // y would be the parent of x
+
+  // the code below is necessary (because the comparison is < )!
+  iterator j = iterator(y);
+  if (comp) { // x is smaller than y
+    if (j == begin()) {
+      return __insert(x, y, val);
+    } else 
+      --j; // there is the possiblity that this element has the same key as val
+  }
+  if (key_compare(key(j.node), KeyOfValue()(val))) // x is larger than y
+    return __insert(x, y, val);
+
+  // x is y
+  return j;
 }
 
 /**

@@ -201,6 +201,65 @@ TEST(rb_tree_int_str_test, insert_equal_range_and_size) {
   EXPECT_TRUE(t.size() == 20); // the size should be 20 this time
 }
 
+TEST(rb_tree_int_str_test, insert_unique_with_hint) {
+  int n = 10;
+  std::string str = "123";
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>> t;
+  std::pair<int, std::string> pairs[10];
+  
+  // create value type
+  for (int i = 0; i < n; ++i) {
+    pairs[i] = std::make_pair(i, str);
+  }
+  t.insert_unique(pairs[0]);
+  // waiting for implementation
+  for (int i = 1; i < n; ++i) {
+    t.insert_unique(t.lower_bound(i-1), pairs[i]);
+  }
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>>::iterator it=t.begin();
+
+  // make sure this is a binary search tree
+  for(int i = 0; it!=t.end(); ++it, ++i) {
+    EXPECT_TRUE(it == t.lower_bound(i));
+  }
+}
+
+TEST(rb_tree_int_str_test, insert_equal_with_hint) {
+  int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
+  int n = 10;
+  std::string str = "123";
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>> t;
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>>::iterator it=t.begin(), tmp;
+  
+  std::pair<int, std::string> pairs[10];
+  
+  // create value type
+  for (int i = 0; i < n; ++i) {
+    pairs[i] = std::make_pair(i, str);
+  }
+  t.insert_equal(pairs[0]);
+  // waiting for implementation
+  for (int i = 1; i < n; ++i) {
+    t.insert_equal(t.lower_bound(i-1), pairs[i]);
+  }
+  t.insert_equal(pairs[0]);
+  for (int i = 1; i < n; ++i) {
+    t.insert_equal(t.lower_bound(i-1), pairs[i]);
+  }
+
+  // make sure this is a binary search tree
+  for(int i = 0; it!=t.end(); ++i) {
+    EXPECT_TRUE(it == t.lower_bound(i));
+    ++it;
+    ++it;
+  }
+  // waiting for implementation
+}
+
 TEST(rb_tree_int_str_test, find) {
   int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
   int n = 10;
@@ -260,17 +319,34 @@ TEST(rb_tree_int_str_test, lower_upper_bound) {
   
   EXPECT_TRUE(t.lower_bound(0) == t.find(0));
   EXPECT_TRUE(t.lower_bound(8) == t.find(8));
-  EXPECT_TRUE(t.lower_bound(11) == t.find(9));
-  EXPECT_TRUE(t.lower_bound(-1) == t.end());
+  EXPECT_TRUE(t.lower_bound(11) == t.end());
+  EXPECT_TRUE(t.lower_bound(-1) == t.begin());
+
+  EXPECT_TRUE(t.upper_bound(0) == t.find(1));
+  EXPECT_TRUE(t.upper_bound(8) == t.find(9));
+  EXPECT_TRUE(t.upper_bound(11) == t.end());
+  EXPECT_TRUE(t.upper_bound(-1) == t.begin());
 
   // insert twice
   for (int i = 0 ; i<n; ++i) {
     std::string str = std::to_string(a[i]);
     t.insert_equal(std::make_pair(a[i], str));
   }
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>>::iterator it;
 
-  for (int i = 0; i < n; ++i) {
-    EXPECT_TRUE(t.count(a[i]) == 2);
+  for (int i = 0; i<n; ++i) {
+    // find the first occurance:
+    for (it=t.begin(); it!=t.end();++it) {
+      if ((*it).first == i)
+        break;
+    }
+    // test whether lower bound returns the first occurance
+    EXPECT_TRUE(it == t.lower_bound(i));
+    // test whether upper bound returns the next occurance
+    int j = i-1;
+    EXPECT_TRUE(it == t.upper_bound(j));
+
   }
 }
 
