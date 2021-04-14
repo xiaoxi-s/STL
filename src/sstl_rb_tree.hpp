@@ -415,7 +415,7 @@ protected:
   // data members
   size_type node_count; 
   link_type header; // a node "above" root
-  Compare key_compare; // a function for comparing keys  
+  Compare comp; // a function for comparing keys  
 
   link_type& root() const { return (link_type&) header->parent;}
   link_type& left_most() const { return (link_type&) header->left;}
@@ -522,11 +522,11 @@ private:
     link_type x = (link_type) x_;
     link_type y = (link_type) y_;
     link_type z;
-    bool comp = key_compare(KeyOfValue()(val), key(y));
+    bool comp_result = comp(KeyOfValue()(val), key(y));
     z = create_node(val);
 
     // no x != 0
-    if (y == header || x != nullptr|| key_compare(KeyOfValue()(val), key(y))) {
+    if (y == header || x != nullptr|| comp(KeyOfValue()(val), key(y))) {
       // when y is header (tree is empty) 
       // or ??? 
       // or key of val is smaller than key of y. 
@@ -643,12 +643,12 @@ private:
 
 public:
   /********* De-constructor *********/
-  rb_tree(const Compare& comp = Compare()): node_count(0), key_compare(comp) { 
+  rb_tree(const Compare& comp = Compare()): node_count(0), comp(comp) { 
     init(); 
   }
   rb_tree(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& t) {
     init();
-    key_compare = t.key_compare;
+    comp = t.comp;
 
     if (t.empty())
       return;
@@ -677,7 +677,7 @@ public:
   }
 
   /********* Accessors *********/
-  Compare key_comp() const { return key_compare;}
+  Compare key_comp() const { return comp;}
   iterator begin() const { return left_most(); }
   iterator end() const { return header; }
   reverse_iterator rbegin() const { return iterator(header); }
@@ -745,7 +745,7 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const Key& k) {
   iterator lower = lower_bound(k);
 
-  return (lower == end() || key_compare(KeyOfValue() (*lower), k)) ? end(): lower; 
+  return (lower == end() || comp(KeyOfValue() (*lower), k)) ? end(): lower; 
 }
 
 /**
@@ -794,7 +794,7 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
   link_type pre = header;
   link_type cur = (link_type) header->parent;
   while (cur != nullptr) {
-    if (key_compare(k, KeyOfValue() (cur->value_field))) {
+    if (comp(k, KeyOfValue() (cur->value_field))) {
       pre = cur;
       cur = (link_type) cur->left;
     } else 
@@ -824,7 +824,7 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
   link_type pre = header;
   link_type cur = (link_type) header->parent;
   while (cur != nullptr) {
-    if (key_compare(k, KeyOfValue() (cur->value_field))) {
+    if (comp(k, KeyOfValue() (cur->value_field))) {
       pre = cur;
       cur = (link_type) cur->left;
     } else 
@@ -856,7 +856,7 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
   link_type pre = header;
   link_type cur = (link_type) header->parent;
   while(cur != nullptr) {
-    if (!key_compare(KeyOfValue() (cur->value_field), k)) {
+    if (!comp(KeyOfValue() (cur->value_field), k)) {
       pre = cur;
       cur = (link_type) cur->left;
     } else 
@@ -888,7 +888,7 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
   link_type pre = header;
   link_type cur = (link_type) header->parent;
   while(cur != nullptr) {
-    if (!key_compare(KeyOfValue() (cur->value_field), k)) {
+    if (!comp(KeyOfValue() (cur->value_field), k)) {
       pre = cur;
       cur = (link_type) cur->left;
     } else 
@@ -964,7 +964,7 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
   link_type x = root();
   while(x != nullptr) {
     y = x;
-    x = key_compare(KeyOfValue()(val), key(x)) ? left(x) : right(x);
+    x = comp(KeyOfValue()(val), key(x)) ? left(x) : right(x);
   }
 
   return __insert(x, y, val);
@@ -1013,7 +1013,7 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
   link_type x = (link_type) position.node;
   while(x != nullptr) {
     y = x;
-    x = key_compare(KeyOfValue()(val), key(x)) ? left(x) : right(x);
+    x = comp(KeyOfValue()(val), key(x)) ? left(x) : right(x);
   }
 
   return __insert(x, y, val);
@@ -1042,22 +1042,22 @@ std:: pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, b
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(const value_type& val) {
   link_type y = header;
   link_type x = root();
-  bool comp = true;
+  bool comp_result = true;
   while(x != nullptr) {
     y = x;
-    comp = key_compare(KeyOfValue()(val), key(x));
-    x = comp ? left(x) : right(x);
+    comp_result = comp(KeyOfValue()(val), key(x));
+    x = comp_result ? left(x) : right(x);
   } // y would be the parent of x
 
   // the code below is necessary (because the comparison is < )!
   iterator j = iterator(y);
-  if (comp) { // x is smaller than y
+  if (comp_result) { // x is smaller than y
     if (j == begin()) {
       return std::pair<iterator, bool>(__insert(x, y, val), true);
     } else 
       --j; // there is the possiblity that this element has the same key as val
   }
-  if (key_compare(key(j.node), KeyOfValue()(val))) // x is larger than y
+  if (comp(key(j.node), KeyOfValue()(val))) // x is larger than y
     return std::pair<iterator, bool>(__insert(x, y, val), true);
 
   // x is y
@@ -1106,22 +1106,22 @@ typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
   // start with the hint!
   link_type y = (link_type) position.node->parent;
   link_type x = (link_type) position.node;
-  bool comp = true;
+  bool comp_result = true;
   while(x != nullptr) {
     y = x;
-    comp = key_compare(KeyOfValue()(val), key(x));
-    x = comp ? left(x) : right(x);
+    comp_result = comp(KeyOfValue()(val), key(x));
+    x = comp_result ? left(x) : right(x);
   } // y would be the parent of x
 
   // the code below is necessary (because the comparison is < )!
   iterator j = iterator(y);
-  if (comp) { // x is smaller than y
+  if (comp_result) { // x is smaller than y
     if (j == begin()) {
       return __insert(x, y, val);
     } else 
       --j; // there is the possiblity that this element has the same key as val
   }
-  if (key_compare(key(j.node), KeyOfValue()(val))) // x is larger than y
+  if (comp(key(j.node), KeyOfValue()(val))) // x is larger than y
     return __insert(x, y, val);
 
   // x is y
