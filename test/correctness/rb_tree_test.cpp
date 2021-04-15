@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <stdlib.h>
-
 #include "../../src/sstl_rb_tree.hpp"
 #include <utility>
 #include <string>
@@ -31,7 +29,6 @@ TEST(rb_tree_int_str_test, insert_unique_simple_and_size) {
   // does the same insersion again
   for (int i = 0 ; i<n; ++i)
     t.insert_unique(std::make_pair(a[i], str));
-  printf("%ld\n", t.size());
   EXPECT_TRUE(t.size() == 10); // the size should be only 10
 }
 
