@@ -390,4 +390,19 @@ TEST(rb_tree_int_str_test, erase) {
   }
   EXPECT_TRUE(t.empty());
 }
+
+TEST(rb_tree_int_str_test, equal_equal_operator_overloading) {
+  int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
+  int n = 10;
+  sup::rb_tree<int, std::pair<int, std::string>, 
+    get_first<int, std::string>, std::less<int>> t1, t2;
+
+  for (int i = 0 ; i<n; ++i) {
+    std::string str = std::to_string(a[i]);
+    t1.insert_unique(std::make_pair(a[i], str));
+    t2.insert_unique(std::make_pair(a[i], str));
+  }
+
+  EXPECT_TRUE(t1 == t2);
+}
 }

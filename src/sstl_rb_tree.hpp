@@ -725,6 +725,11 @@ public:
 
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& operator= 
     (rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& t);
+  
+  template <class Key_, class Value_, class KeyOfValue_, 
+  class Compare_, class Alloc_>
+  friend bool operator ==(rb_tree<Key_, Value_, KeyOfValue_, Compare_, Alloc_>& t1,
+                          rb_tree<Key_, Value_, KeyOfValue_, Compare_, Alloc_>& t2);
 };
 
 /**
@@ -1288,6 +1293,48 @@ void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::clear() {
   root() = nullptr;
   left_most() = header;
   right_most() = header;
+}
+
+template <class Key, class Value, class KeyOfValue, 
+  class Compare, class Alloc>
+bool operator ==(rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& t1,
+                          rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& t2) {
+  if (t1.header->parent == nullptr && t2.header->parent == nullptr)
+    return true;
+  if (t1.header->parent == nullptr) return false;
+  if (t2.header->parent == nullptr) return false;
+
+  typedef typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::base_ptr base_ptr;
+  typedef typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::link_type link_type;
+  sup::stack<base_ptr> t1_stk;
+  sup::stack<base_ptr> t2_stk;
+  
+  t1_stk.push(t1.header->parent);
+  t2_stk.push(t2.header->parent);
+
+  while(!t1_stk.empty() || !t2_stk.empty()) {
+    base_ptr t1_tmp = t1_stk.top();
+    t1_stk.pop();
+    base_ptr t2_tmp = t2_stk.top();  
+    t2_stk.pop();
+    if (((link_type) t1_tmp)-> value_field != ((link_type) t2_tmp)-> value_field) {
+      return false;
+    } 
+    if (t1_tmp->left != nullptr && t2_tmp->left != nullptr) {
+      t1_stk.push(t1_tmp->left);
+      t2_stk.push(t2_tmp->left);
+    } else if (t1_tmp->left != nullptr || t2_tmp->left != nullptr) {
+      return false; 
+    }
+    if (t1_tmp->right != nullptr && t2_tmp->right != nullptr) {
+      t1_stk.push(t1_tmp->right);
+      t2_stk.push(t2_tmp->right);
+    } else if (t1_tmp->right != nullptr || t2_tmp->right != nullptr) {
+      return false; 
+    }
+  }
+
+  return true;
 }
 
 }
