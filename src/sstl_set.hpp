@@ -72,7 +72,14 @@ public:
   size_type count(const Key& k) { return t.count(k); }
 
   iterator lower_bound(const Key& k) { return t.lower_bound(k); }
+  const_iterator lower_bound(const Key& k) const { return t.lower_bound(k); }
   iterator upper_bound(const Key& k) { return t.upper_bound(k); }
+  const_iterator upper_bound(const Key& k) const { return t.upper_bound(k); }
+
+  std::pair<iterator, iterator> 
+  equal_range(const Key& k) { return t.equal_range(k); }
+  std::pair<const_iterator, const_iterator> 
+  equal_range(const Key& k) const { return t.equal_range(k); }
 
   /*************** Modifiers ***************/
   std::pair<iterator, bool> insert(const value_type& val) {
