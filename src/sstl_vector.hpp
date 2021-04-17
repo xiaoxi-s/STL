@@ -85,6 +85,7 @@ class vector {
   iterator erase(iterator position);
   iterator erase(iterator first, iterator last);
 
+  void reserve(size_type n);
   void clear();
 
   template<class InputIterator1, class InputIterator2>
@@ -430,6 +431,29 @@ typename vector<T, Alloc>::iterator vector<T, Alloc>::erase(iterator first,
   sup::_destroy(temp_end, finish);
   finish = temp_end;
   return first;
+}
+
+/**
+ * @brief reserve capacity of at least n
+ * 
+ * @tparam T - element type parameter
+ * @tparam Alloc - allocator type
+ * @param n - the capacity must be greater than this after reserve
+ */
+template <class T, class Alloc>
+void vector<T, Alloc>::reserve(size_type n) {
+  if (capacity() < n) {
+    iterator new_start = data_allocator::allocate(n);
+    iterator new_end_of_storage = new_start + n;
+    iterator new_finish = uninitialized_copy(begin(), end(), new_start);
+
+    clear();
+    deallocate();
+
+    start = new_start;
+    end_of_storage = new_end_of_storage;
+    finish = new_finish;
+  }
 }
 
 /**

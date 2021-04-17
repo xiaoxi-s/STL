@@ -60,6 +60,21 @@ TEST(vector_int_test, size) {
   EXPECT_TRUE(!vec3.empty());
 }
 
+TEST(vector_int_test, reserve) {
+  sup::vector<int> vec;
+  int n = 5;
+  for (int i = 0; i < n; ++i) {
+    vec.push_back(i);
+  }
+  EXPECT_TRUE(vec.size() == n);
+  vec.reserve(50);
+  EXPECT_TRUE(vec.capacity() == 50);
+  for (int i = 0; i < n; ++i) {
+    EXPECT_TRUE(vec[i] == i);
+  }
+  EXPECT_TRUE(vec.size() == n);
+}
+
 TEST(vector_int_test, element_access) {
   sup::vector<int> vec(10);
   for (int i = 0; i < 10; ++i) {
