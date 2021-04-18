@@ -1,0 +1,424 @@
+#ifndef _SSTL_HASHTABLE_H
+#define _SSTL_HASHTABLE_H
+
+#include <algorithm>
+
+#include "../../src/sstl_allocator.hpp"
+#include "../../src/sstl_iterator.hpp"
+#include "../../src/sstl_vector.hpp"
+
+namespace sup {
+
+// declaration
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc=alloc>
+class hashtable;
+
+template <class Value>
+struct __hashtable_node {
+  __hashtable_node *next;
+  Value val;
+};
+
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+struct __hashtable_iterator {
+  typedef hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>
+    _hashtable;
+  typedef __hashtable_iterator<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>
+    iterator;
+  typedef __hashtable_iterator<Key, const Value, HashFunc, ExtractKey, EqualKey, Alloc>
+    const_iterator;
+  typedef __hashtable_node<Value> node; 
+
+  typedef forward_iterator_tag iterator_category; 
+  typedef Value value_type;
+  typedef ptrdiff_t difference_type;
+  typedef size_t size_type;
+  typedef Value* pointer;
+  typedef Value& reference; 
+
+  node* cur;
+  _hashtable* table; 
+
+  __hashtable_iterator(node* n, _hashtable* tb): cur(n), table(tb) {}
+  __hashtable_iterator() {}
+
+  reference operator*() const { return cur->val; }
+  pointer operator->() const { return &(operator*());}
+  iterator& operator++() {
+    node* pre = cur;
+    cur = cur->next;
+    if (cur == nullptr) {
+      size_type bucket = table->bkt_num(pre->val);
+      while (cur == nullptr && ++bucket < table->buckets.size()) {
+        cur = table->buckets[bucket];
+      }
+    }
+    return *this;
+  }
+  iterator operator++(int) {
+    iterator tmp = *this
+    ++(*this);
+    return tmp;
+  }
+
+  bool operator==(const iterator& it) { return cur == it.cur; }
+  bool operator!=(const iterator& it) { return cur != it.cur; }
+};
+
+enum { sstl_num_of_primes = 29 };
+
+template<class __PrimeType>
+struct __hashtable_prime_list {
+  static const __PrimeType __sstl_prime_list[sstl_num_of_primes];
+  static const __PrimeType* __get_prime_list() {
+    return __sstl_prime_list;
+  }
+};
+
+template<class __PrimeType>
+const __PrimeType __hashtable_prime_list<__PrimeType>::__sstl_prime_list[sstl_num_of_primes] = {
+  5ul,          53ul,         97ul,         193ul,       389ul,
+  769ul,        1543ul,       3079ul,       6151ul,      12289ul,
+  24593ul,      49157ul,      98317ul,      196613ul,    393241ul,
+  786433ul,     1572869ul,    3145739ul,    6291469ul,   12582917ul,
+  25165843ul,   50331653ul,   100663319ul,  201326611ul, 402653189ul,
+  805306457ul,  1610612741ul, 3221225473ul, 4294967291ul
+};
+
+inline unsigned long __sstl_next_prime(unsigned long num) {
+  const unsigned long *first = __hashtable_prime_list<unsigned long>::__get_prime_list();
+  const unsigned long *last = first + sstl_num_of_primes;
+  const unsigned long *position = std::upper_bound(first, last, num);
+
+  return (position == last) ? *(position - 1) : *position;
+}
+
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+class hashtable {
+public: 
+  typedef Key key_type;
+  typedef HashFunc hasher;
+  typedef EqualKey key_equal;
+  typedef size_t size_type;
+  typedef Value value_type;
+  typedef __hashtable_iterator<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc> iterator;
+
+private:
+  hasher hash;
+  key_equal equals;
+  ExtractKey get_key;
+
+  typedef __hashtable_node<Value> node;
+  typedef simple_alloc<node, Alloc> node_allocator;
+  typedef hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc> _self;
+  typedef sup::vector<node*, Alloc> bucket_type;
+  sup::vector<node*, Alloc> buckets;
+  size_type num_of_elements;
+  float load_factor;
+
+public:
+  /*************** De-constructors ***************/
+  hashtable(size_type n, const HashFunc hfc, const EqualKey eq_k)
+    :hash(hfc), equals(eq_k), get_key(ExtractKey()), num_of_elements(0), load_factor(1.0) {
+    initialize_buckets(n);
+  }
+  
+  /*************** Accessors ***************/
+  size_type size() const { return num_of_elements; }
+  size_type bucket_count() const { return buckets.size(); }
+  size_type max_bucket_count() const 
+    { return __hashtable_prime_list<unsigned long>::__get_prime_list()[sstl_num_of_primes-1]; }
+  iterator begin() { 
+    if (num_of_elements == 0)
+      return end();
+    
+    for (size_type i = 0; i < buckets.size(); ++i) {
+      if (buckets[i] != nullptr)
+        return iterator(buckets[i], this);
+    }
+
+    return end();
+  }
+  iterator end() { return iterator(nullptr, this); }
+  iterator find(const key_type& k) {
+    size_type bucket = bkt_num_key(k);
+    node* cur = buckets[bucket];
+
+    while (cur != nullptr && !equals(k, get_key(cur->val))) {
+      cur = cur->next;
+    }
+
+    return iterator(cur, this);
+  }
+  std::pair<iterator, iterator> equal_range(const key_type& key) {
+    iterator first = find(key);
+    if (first == end())
+      return std::pair<iterator, iterator>(first, first);
+    iterator last = first;
+    ++last;
+    while (get_key(*last) == key) {
+      ++last;
+    }
+
+    return std::pair<iterator, iterator>(first, last);
+  }
+  // operator [] overloading
+  value_type& operator[] (key_type key) {
+    size_type bucket = bkt_num_key(key);
+    node* cur = buckets[bucket];
+    if (cur != nullptr) { // there are other elements
+      while (cur != nullptr) {
+        if (equals(get_key(cur->val), key)) // there exists the exact key
+          return cur->val;
+        cur = cur->next;
+      }
+    }
+    // there are no other elements or 
+    // there are no elements of the same key
+    resize(num_of_elements + 1); 
+    bucket = bkt_num_key(key);
+    cur = new_node(value_type());
+    cur->next = buckets[bucket];
+    buckets[bucket] = cur;
+    ++num_of_elements;
+    return cur->val;
+  }
+
+  /*************** Modifiers ***************/
+  iterator insert_equal(const value_type& val);
+  template<class InputIterator>
+  void insert_equal(InputIterator first, InputIterator last);
+
+  std::pair<iterator, bool> insert_unique(const value_type& val);
+  template<class InputIterator>
+  void insert_unique(InputIterator first, InputIterator last);
+  // getter and setter for load factors
+  float max_load_factor() const { return load_factor; }
+  void max_load_factor(float factor) { load_factor = factor; }
+
+private:
+  // helper functions
+  // create & delete node
+  node* new_node(const value_type& val) {
+    node *n = node_allocator::allocate();
+    n->next = nullptr;
+    try {
+      sup::_construct(&(n->val), val);
+      return n; 
+    } catch (...) {
+      // commit or rollback
+      node_allocator::deallocate(n); 
+      throw;
+    }
+    return n;
+  }
+  void delete_node(node* n) {
+    sup::_destroy(&(n->val));
+    node_allocator::deallocate(n);
+  }
+  // init buckts when table is first constructed
+  void initialize_buckets(size_type n) {
+    const size_type n_buckets = next_size(n);
+    buckets.reserve(n_buckets);
+    buckets.insert(buckets.end(), n_buckets, nullptr);
+    num_of_elements = 0;
+  }
+  // helper function that returns the next prime capacity
+  inline size_type next_size(unsigned long num) { return __sstl_next_prime(num); }
+  // helper function that calls hash
+  size_type bkt_num_key (const key_type& key) const {
+    return hash(key) % buckets.size();
+  }
+  size_type bkt_num_key (const key_type& key, size_type bkt_num) const {
+    return hash(key) % bkt_num;
+  }
+  // wrapper for hash function
+  size_type bkt_num(const value_type& val) const { return bkt_num_key(get_key(val)); }
+  size_type bkt_num(const value_type& val, size_type bkt_size) const 
+    { return bkt_num_key(get_key(val), bkt_size); }
+  void resize(size_type num_of_element_hint) {
+    if (((float) num_of_elements / buckets.size()) > load_factor) {
+      // trigger resize
+      bucket_type new_buckets(next_size(buckets.size()));
+      
+      size_type bucket = 0;
+      while (bucket < buckets.size()) {
+        node* cur = buckets[bucket];
+        while (cur != nullptr) {
+          node* tmp = cur;
+          cur = cur->next;
+          insert_into_new_bucket(tmp, new_buckets);
+        }
+        buckets[bucket] = nullptr;
+        ++bucket;
+      }
+      buckets.swap(new_buckets);
+      new_buckets.clear();
+    }
+  }
+  // insert the new node into the corresponding bucket such that 
+  // the same keys are in a continuous range
+  inline void insert_into_new_bucket(node* position, bucket_type& new_buckets) {
+    size_type bucket = bkt_num(position->val, new_buckets.size());
+    node* cur = new_buckets[bucket];
+    if (cur == nullptr) {
+      new_buckets[bucket] = position;
+      position->next = nullptr;
+    } else {
+      // node* pre = cur;
+      // while (cur != nullptr && !equals(get_key(position->val), get_key(cur->val))) {
+      //   pre = cur;
+      //   cur = cur->next;
+      // }
+      // pre->next = position;
+      // position->next = cur;
+      position->next = new_buckets[bucket];
+      new_buckets[bucket] = position;
+    }
+  }
+  friend __hashtable_iterator<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>;
+};
+
+/**
+ * @brief given a value, insert it into the hashtable and returns 
+ *  an iterator pointing to the value
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @param val - the given value
+ * @return hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::iterator 
+ *  to the inserted element
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+typename hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::iterator 
+hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::insert_equal(
+  const typename hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::value_type& val) {
+  resize(num_of_elements + 1);
+  
+  size_type bucket = bkt_num(val);
+  node* cur = buckets[bucket];
+  node* new_value_node = new_node(val);
+  if (cur == nullptr) {
+    buckets[bucket] = new_value_node;
+  } else {
+    node* pre = cur;
+    while (cur != nullptr && !equals(get_key(new_value_node->val), get_key(cur->val))) {
+      pre = cur;
+      cur = cur->next;
+    }
+    pre->next = new_value_node;
+    new_value_node->next = cur;
+  }
+
+  ++num_of_elements;
+  return iterator(new_value_node, this);
+}
+
+/**
+ * @brief given a range [first, last) of values to insert 
+ *  (duplicate keys are allowed)
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @tparam InputIterator - iterator type
+ * @param first - the start of the range
+ * @param last - the end of the range
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+template<class InputIterator>
+void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::insert_equal(
+  InputIterator first, InputIterator last) {
+  while (first != last) {
+    insert_equal(*first);
+    ++first;
+  }
+}
+
+/**
+ * @brief Given a value, insert it into the hashtable. Return 
+ *  a pair of iterator pointing to the inserted value, and a 
+ *  bool varaible that denotes whether the insertion is 
+ *  successful. If there is a duplicate key, the bool variable
+ *  will be false and the iterator would point to the already
+ *  inserted element.
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @param val - the given value
+ * @return std::pair<
+ *  typename hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::iterator, bool>
+ *  - as described in the brief 
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+std::pair<typename hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::iterator, bool> 
+hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::insert_unique(
+  const typename hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::value_type& val) {
+  resize(num_of_elements + 1);
+  
+  size_type bucket = bkt_num(val);
+  node* cur = buckets[bucket];
+  node* new_value_node = nullptr;
+  if (cur == nullptr) {
+    buckets[bucket] = new_node(val);
+  } else {
+    while (cur != nullptr) {
+      // if element of the same key is found, just return
+      if (equals(get_key(val), get_key(cur->val)))
+        return std::pair<iterator, bool>(iterator(cur, this), false);
+      cur = cur->next;
+    }
+    new_value_node = new_node(val);
+    new_value_node->next = buckets[bucket];
+    buckets[bucket] = new_value_node;
+  }
+
+  ++num_of_elements;
+  return std::pair<iterator, bool>(iterator(new_value_node, this), true);
+}
+
+/**
+ * @brief  given a range [first, last) of values to insert 
+ *  (duplicate keys are not allowed)
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @tparam InputIterator - iterator type
+ * @param first - start of the range
+ * @param last - end of the range 
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+template<class InputIterator>
+void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::insert_unique(
+  InputIterator first, InputIterator last) {
+  while (first != last) {
+    insert_unique(*first);
+    ++first;
+  }
+}
+
+}
+
+#endif
