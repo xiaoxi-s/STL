@@ -117,7 +117,7 @@ private:
   typedef sup::vector<node*, Alloc> bucket_type;
   sup::vector<node*, Alloc> buckets;
   size_type num_of_elements;
-  float load_factor;
+  float max_load_factor;
 
 public:
   /*************** De-constructors ***************/
@@ -222,8 +222,9 @@ public:
   void clear();
 
   // getter and setter for load factors
-  float max_load_factor() const { return load_factor; }
-  void max_load_factor(float factor) { load_factor = factor; }
+  float load_factor() const { return (float) num_of_elements/buckets.size(); }
+  float max_load_factor() const { return max_load_factor; }
+  void max_load_factor(float max_factor) { max_load_factor = max_factor; }
 
   // modifiers for space
   void rehash(size_type n);
