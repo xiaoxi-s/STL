@@ -155,7 +155,7 @@ TEST(hashtable_int_string_test, equal_range) {
     ht(10, id, eq);
 
   int n = 20;
-  // insert 10 "10"s. 
+  // insert 20 "10"s. 
   for (int i = 0; i < n; ++i) {
     // still the same key, but use 
     // [] to insert
@@ -184,4 +184,140 @@ TEST(hashtable_int_string_test, equal_range) {
   // test there are only 20 of "10"s
   EXPECT_TRUE(sum_of_elements_with_equal_key == 20);
 }
+
+TEST(hashtable_int_string_test, erase_given_key) {
+    identity<int> id;
+  equal<int> eq;
+  sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>> 
+    ht(10, id, eq);
+  int n = 20;
+  
+  // insert 10 "10"s
+  for (int i = 0; i < n; ++i) {
+    ht.insert_equal(std::to_string(10));
+  }
+
+  // insert other elements
+  for (int i = 20; i < 1000; ++i) {
+    ht.insert_equal(std::to_string(i));
+  }
+
+  // erase all elements with key 10, i.e. strings "10"
+  EXPECT_TRUE(ht.erase(10) == 20);
+
+  // erase newly added elements
+  for (int i = 20; i < 1000; ++i) {
+    EXPECT_TRUE(ht.erase(i) == 1);
+  }
+
+  // insert again
+  for(int i = 0; i < 1000; ++i) {
+    ht.insert_equal(std::to_string(i));
+  }
+  
+  // newly inserted elements should be found
+  for(int i = 0; i < 1000; ++i) {
+    sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>>::iterator 
+      it = ht.find(i);
+    EXPECT_TRUE(*it == std::to_string(i));
+  }
+  EXPECT_TRUE(ht.size() == 1000);
+}
+
+TEST(hashtable_int_string_test, erase_given_iterator) {
+    identity<int> id;
+  equal<int> eq;
+  sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>> 
+    ht(10, id, eq);
+  int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
+  int n = 10;
+
+  // insert some elements
+  for (int i = 0; i < n; ++i) {
+    ht.insert_unique(std::to_string(a[i]));
+  }
+  
+  EXPECT_TRUE(ht.size() == n);
+  for (int i = 0; i < n; ++i) {
+    sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>>::iterator 
+      it = ht.find(i);
+    ht.erase(it);
+    // find it after erase
+    EXPECT_TRUE(ht.find(i) == ht.end());
+  }
+
+  // after erasing all elements, the size should be 0
+  EXPECT_TRUE(ht.size() == 0);
+
+  // insert again
+  for (int i = 0; i < n; ++i) {
+    ht.insert_unique(std::to_string(a[i]));
+  }
+
+  // the values must be found
+  for (int i = 0; i < n; ++i) {
+    sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>>::iterator 
+      it = ht.find(a[i]);
+    EXPECT_TRUE(*it == std::to_string(a[i]));
+  }
+}
+
+TEST(hashtable_int_string_test, erase_given_range) {
+    identity<int> id;
+  equal<int> eq;
+  sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>> 
+    ht(10, id, eq);
+  int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
+  int n = 10;
+
+  // insert some elements
+  for (int i = 0; i < n; ++i) {
+    ht.insert_unique(std::to_string(a[i]));
+  }
+  
+  sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>>::iterator
+    first = ht.find(3);
+  sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>>::iterator
+    last = ht.find(6);
+  
+  // remvove elements of key 3, 4, 5
+  ht.erase(first, last);
+  EXPECT_TRUE(ht.size() == 7);
+
+  for (int i = 0; i < n; ++i) {
+    sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>>::iterator
+      it = ht.find(i);
+    if ( i < 3 || i >= 6) {
+      EXPECT_TRUE(*it == std::to_string(i));
+    } else {
+      EXPECT_TRUE(it == ht.end());
+    }
+  }
+}
+
+
+TEST(hashtable_int_string_test, clear) {
+    identity<int> id;
+  equal<int> eq;
+  sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>> 
+    ht(10, id, eq);
+
+  int n = 20;
+  // insert 10 "10"s. 
+  for (int i = 0; i < n; ++i) {
+    // still the same key, but use 
+    // [] to insert
+    ht[i] = std::to_string(10);
+  }
+
+  // insert some other elements
+  for (int i = 20; i < 1000; ++i) {
+    ht[i] = std::to_string(i);
+  }
+  ht.clear();
+
+  EXPECT_TRUE(ht.size() == 0);
+  EXPECT_TRUE(ht.begin() == ht.end());
+}
+
 }

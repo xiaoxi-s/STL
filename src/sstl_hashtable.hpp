@@ -195,9 +195,18 @@ public:
   std::pair<iterator, bool> insert_unique(const value_type& val);
   template<class InputIterator>
   void insert_unique(InputIterator first, InputIterator last);
+
+  size_type erase(const key_type& key);
+  void erase(iterator& position);
+  void erase(iterator first, iterator last);
+
+  void clear();
   // getter and setter for load factors
   float max_load_factor() const { return load_factor; }
   void max_load_factor(float factor) { load_factor = factor; }
+  hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>&
+    operator= (hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>& table);
+
 
 private:
   // helper functions
@@ -314,8 +323,13 @@ hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::insert_equal(
       pre = cur;
       cur = cur->next;
     }
-    pre->next = new_value_node;
-    new_value_node->next = cur;
+    if (pre != cur) {
+      pre->next = new_value_node;
+      new_value_node->next = cur;
+    } else {
+      new_value_node->next = buckets[bucket];
+      buckets[bucket] = new_value_node;
+    }
   }
 
   ++num_of_elements;
@@ -417,6 +431,233 @@ void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::insert_unique
     insert_unique(*first);
     ++first;
   }
+}
+
+/**
+ * @brief erase elements with the given key. return the number of elements 
+ *  erased
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @param key - the given key
+ * @return hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::size_type 
+ *  - the number of elements removed
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+typename hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::size_type 
+hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::erase(
+  const key_type& key) {
+  size_type num_of_erased = 0;
+  size_type bucket = bkt_num_key(key);
+  node* first = buckets[bucket];
+
+  if (first != nullptr) {
+    // find the equal key
+    while (first != nullptr && !equals(get_key(first->val), key)) {
+      first = first->next;
+    }
+    if (first == nullptr)  // no such key
+      return num_of_erased;
+    
+    node* next = first->next;
+
+    // remove elements with the same key value 
+    while (equals(get_key(first->val), key)) {
+      delete_node(first);
+      ++num_of_erased;
+      --num_of_elements;
+      first = next;
+      if (first == nullptr)
+        break;
+      next = next->next;
+    }
+
+    buckets[bucket] = first;
+  }
+
+  return num_of_erased;
+}
+
+/**
+ * @brief erase an element given its position
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @param position - the given position of the element that 
+ *  would be erased
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::erase(
+  iterator& position) {
+  node* n = position.cur;
+  size_type bucket = bkt_num(*position);
+  node* first = buckets[bucket];
+  if (first != n) {
+    node* pre;
+    while (first != n) {
+      pre = first;
+      first = first->next;
+    }
+    pre->next = first->next;
+    delete_node(first);
+  } else {
+    buckets[bucket] = n->next;
+    delete_node(n);
+    --num_of_elements;
+  }
+}
+
+/**
+ * @brief erase elements in a given range[first, last)
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @param first - the start of the range
+ * @param last - the end of the range
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::erase(
+  iterator first, iterator last) {
+  size_type start_bucket = bkt_num(*first);
+  size_type end_bucket = bkt_num(*last);
+  node * cur;
+  // remove concecutive elements within the same bucket
+  for (size_type bucket = start_bucket + 1; bucket < end_bucket; ++bucket) {
+    cur = buckets[bucket];
+    while (cur != nullptr) {
+      node * tmp = cur->next;
+      delete_node(cur);
+      --num_of_elements;
+      cur = tmp; 
+    }
+    buckets[bucket] = nullptr;
+  }
+
+  // remove elements after first but within the same bucket
+  cur = buckets[start_bucket];
+  if (cur != first.cur) {
+    while(cur->next != first.cur) {
+      cur = cur->next;
+    }
+
+    node* pre = cur;
+    node* next = cur->next;
+    while (cur != last.cur) {
+      delete_node(cur);
+      --num_of_elements;
+      cur = next;
+      if (cur == nullptr)
+        break;
+      next = next->next;
+    }
+    pre = next;
+  } else { // remove the entire bucket before last
+    node* next = cur->next;
+    while (cur != last.cur) {
+      delete_node(cur);
+      --num_of_elements;
+      cur = next;
+      if (cur == nullptr) 
+        break;
+      next = next->next;
+    }
+    buckets[start_bucket] = next;
+  }
+  
+  // remove elements before last but within the same bucket
+  cur = buckets[end_bucket];
+
+  if (cur == last.cur) {
+    return;
+  } else {
+    node* next = cur->next;
+    while (cur != last.cur) {
+      delete_node(cur);
+      --num_of_elements;
+      cur = next;
+      if (cur == nullptr) 
+        break;
+      next = next->next;
+    }
+    buckets[end_bucket] = next;
+  }
+}
+
+/**
+ * @brief clear the hashtable; keep the buckets untouched
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::clear() {
+  if (num_of_elements > 0) {
+    size_type bucket = 0;
+    while (bucket < buckets.size()) {
+      node* cur = buckets[bucket];
+      while (cur != nullptr) {
+        node* tmp = cur->next;
+        delete_node(cur);
+        cur = tmp;
+      }
+      buckets[bucket] = nullptr;
+      ++bucket;
+    }
+
+    num_of_elements = 0;
+  }
+}
+
+/**
+ * @brief assignment operator overloading
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @param table - another hash table of the same type
+ * @return hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>& 
+ *  - reference to *this
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>& 
+hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::operator= 
+(hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>& table) {
+  clear();
+  if (bucket_count() > table.bucket_count()) {
+    iterator it = table.begin();
+    while(it != table.end())
+      insert_equal(*it);
+  } else {
+    buckets.reserve(table.buckets.size());
+    iterator it = table.begin();
+    while(it != table.end())
+      insert_equal(*it);
+  }
+  return *this; 
 }
 
 }
