@@ -445,7 +445,7 @@ void vector<T, Alloc>::reserve(size_type n) {
   if (capacity() < n) {
     iterator new_start = data_allocator::allocate(n);
     iterator new_end_of_storage = new_start + n;
-    iterator new_finish = uninitialized_copy(begin(), end(), new_start);
+    iterator new_finish = sup::uninitialized_copy(begin(), end(), new_start);
 
     clear();
     deallocate();
