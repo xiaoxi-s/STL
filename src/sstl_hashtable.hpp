@@ -67,6 +67,56 @@ struct __hashtable_iterator {
   bool operator!=(const iterator& it) { return cur != it.cur; }
 };
 
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+struct __hashtable_const_iterator {
+  typedef hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>
+    _hashtable;
+  typedef __hashtable_iterator<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>
+    iterator;
+  typedef __hashtable_const_iterator<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>
+    const_iterator;
+  typedef __hashtable_node<Value> node; 
+
+  typedef forward_iterator_tag iterator_category; 
+  typedef Value value_type;
+  typedef ptrdiff_t difference_type;
+  typedef size_t size_type;
+  typedef const Value* pointer;
+  typedef const Value& reference; 
+
+  const node* cur;
+  const _hashtable* table; 
+
+  __hashtable_const_iterator(node* n, _hashtable* tb): cur(n), table(tb) {}
+  __hashtable_const_iterator() {}
+  __hashtable_const_iterator(const iterator& it)
+    :cur(it.cur), table(it.table) {}
+
+  reference operator*() const { return cur->val; }
+  pointer operator->() const { return &(operator*());}
+  const_iterator& operator++() {
+    node* pre = cur;
+    cur = cur->next;
+    if (cur == nullptr) {
+      size_type bucket = table->bkt_num(pre->val);
+      while (cur == nullptr && ++bucket < table->buckets.size()) {
+        cur = table->buckets[bucket];
+      }
+    }
+    return *this;
+  }
+  const_iterator operator++(int) {
+    const_iterator tmp = *this
+    ++(*this);
+    return tmp;
+  }
+
+  bool operator==(const iterator& it) { return cur == it.cur; }
+  bool operator!=(const iterator& it) { return cur != it.cur; }
+};
+
+
 enum { sstl_num_of_primes = 29 };
 
 template<class __PrimeType>
@@ -105,6 +155,14 @@ public:
   typedef size_t size_type;
   typedef Value value_type;
   typedef __hashtable_iterator<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc> iterator;
+  typedef __hashtable_const_iterator<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc> const_iterator;
+  typedef ptrdiff_t difference_type;
+
+  // not allowed to modify key
+  typedef Value* pointer;
+  typedef const Value* const_pointer;
+  typedef Value& reference;
+  typedef const Value& const_reference;
 
 private:
   hasher hash;
@@ -139,6 +197,7 @@ public:
     }
     return num;
   }
+  size_type max_size() const { return size_type(-1); }
   size_type bucket_count() const { return buckets.size(); }
   size_type max_bucket_count() const 
     { return __hashtable_prime_list<unsigned long>::__get_prime_list()[sstl_num_of_primes-1]; }
@@ -156,6 +215,20 @@ public:
     return end();
   }
   iterator end() { return iterator(nullptr, this); }
+
+  const_iterator begin() const { 
+    if (num_of_elements == 0)
+      return end();
+    
+    for (size_type i = 0; i < buckets.size(); ++i) {
+      if (buckets[i] != nullptr)
+        return const_iterator(buckets[i], this);
+    }
+
+    return end();
+  }
+  const_iterator end() const { return const_iterator(nullptr, this); }
+
   iterator find(const key_type& k) {
     size_type bucket = bkt_num_key(k);
     node* cur = buckets[bucket];
@@ -165,6 +238,17 @@ public:
     }
 
     return iterator(cur, this);
+  }
+
+  const_iterator find(const key_type& k) const {
+    size_type bucket = bkt_num_key(k);
+    node* cur = buckets[bucket];
+
+    while (cur != nullptr && !equals(k, get_key(cur->val))) {
+      cur = cur->next;
+    }
+
+    return const_iterator(cur, this);
   }
   std::pair<iterator, iterator> equal_range(const key_type& key) {
     iterator first = find(key);
@@ -178,6 +262,21 @@ public:
 
     return std::pair<iterator, iterator>(first, last);
   }
+
+  std::pair<const_iterator, const_iterator> 
+  equal_range(const key_type& key) const {
+    iterator first = find(key);
+    if (first == end())
+      return std::pair<iterator, iterator>(first, first);
+    iterator last = first;
+    ++last;
+    while (last != end() && get_key(*last) == key) {
+      ++last;
+    }
+
+    return std::pair<iterator, iterator>(first, last);
+  }
+
 
   // operator [] overloading
   value_type& operator[] (key_type key) {
@@ -217,7 +316,9 @@ public:
 
   size_type erase(const key_type& key);
   void erase(iterator& position);
+  void erase(const_iterator& position);
   void erase(iterator first, iterator last);
+  void erase(const_iterator first, const_iterator last);
 
   void clear();
 
@@ -233,7 +334,6 @@ public:
   // assignment operator overloading
   hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>&
     operator= (hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>& table);
-
 
 private:
   // helper functions
@@ -251,7 +351,7 @@ private:
     }
     return n;
   }
-  void delete_node(node* n) {
+  void delete_node(const node* n) {
     sup::_destroy(&(n->val));
     node_allocator::deallocate(n);
   }
@@ -544,6 +644,28 @@ void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::erase(
   }
 }
 
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::erase(
+  const_iterator& position) {
+  const node* n = position.cur;
+  size_type bucket = bkt_num(*position);
+  node* first = buckets[bucket];
+  if (first != n) {
+    node* pre;
+    while (first != n) {
+      pre = first;
+      first = first->next;
+    }
+    pre->next = first->next;
+    delete_node(first);
+  } else {
+    buckets[bucket] = n->next;
+    delete_node(n);
+    --num_of_elements;
+  }
+}
+
 /**
  * @brief erase elements in a given range[first, last)
  * 
@@ -561,6 +683,87 @@ template <class Key, class Value, class HashFunc,
 void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::erase(
   iterator first, iterator last) {
   size_type start_bucket = bkt_num(*first);
+  size_type end_bucket = bkt_num(*last);
+  node * cur;
+  // remove concecutive elements within the same bucket
+  for (size_type bucket = start_bucket + 1; bucket < end_bucket; ++bucket) {
+    cur = buckets[bucket];
+    while (cur != nullptr) {
+      node * tmp = cur->next;
+      delete_node(cur);
+      --num_of_elements;
+      cur = tmp; 
+    }
+    buckets[bucket] = nullptr;
+  }
+
+  // remove elements after first but within the same bucket
+  cur = buckets[start_bucket];
+  if (cur != first.cur) {
+    while(cur->next != first.cur) {
+      cur = cur->next;
+    }
+
+    node* pre = cur;
+    node* next = cur->next;
+    while (cur != last.cur) {
+      delete_node(cur);
+      --num_of_elements;
+      cur = next;
+      if (cur == nullptr)
+        break;
+      next = next->next;
+    }
+    pre = next;
+  } else { // remove the entire bucket before last
+    node* next = cur->next;
+    while (cur != last.cur) {
+      delete_node(cur);
+      --num_of_elements;
+      cur = next;
+      if (cur == nullptr) 
+        break;
+      next = next->next;
+    }
+    buckets[start_bucket] = next;
+  }
+  
+  // remove elements before last but within the same bucket
+  cur = buckets[end_bucket];
+
+  if (cur == last.cur) {
+    return;
+  } else {
+    node* next = cur->next;
+    while (cur != last.cur) {
+      delete_node(cur);
+      --num_of_elements;
+      cur = next;
+      if (cur == nullptr) 
+        break;
+      next = next->next;
+    }
+    buckets[end_bucket] = next;
+  }
+}
+
+/**
+ * @brief const overloading of erase given a range
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @param first - the start of the range
+ * @param last - the end of the range
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::erase(
+  const_iterator first, const_iterator last) {
+size_type start_bucket = bkt_num(*first);
   size_type end_bucket = bkt_num(*last);
   node * cur;
   // remove concecutive elements within the same bucket
