@@ -84,7 +84,7 @@ public:
 
   ~simple_alloc() {}
 
-  static T* allocate(size_t n) {
+  static T* allocate(const size_t n) {
     return n == 0 ? nullptr : (T*) Alloc::allocate(n * sizeof(T));
   }
 
@@ -92,11 +92,11 @@ public:
     return (T*) Alloc::allocate(sizeof(T));
   }
 
-  static void deallocate(T* p, size_type n) {
+  static void deallocate(const T* p, const size_type n) {
     Alloc::deallocate((char*) p, n*sizeof(T));
   }
 
-  static void deallocate(T* p) {
+  static void deallocate(const T* p) {
     Alloc::deallocate((char*) p, sizeof(T));
   }
   // Operator = overload here since C++11:
