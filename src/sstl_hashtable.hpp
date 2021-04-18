@@ -117,12 +117,12 @@ private:
   typedef sup::vector<node*, Alloc> bucket_type;
   sup::vector<node*, Alloc> buckets;
   size_type num_of_elements;
-  float max_load_factor;
+  float max_load_factor_value;
 
 public:
   /*************** De-constructors ***************/
   hashtable(size_type n, const HashFunc hfc, const EqualKey eq_k)
-    :hash(hfc), equals(eq_k), get_key(ExtractKey()), num_of_elements(0), load_factor(1.0) {
+    :hash(hfc), equals(eq_k), get_key(ExtractKey()), num_of_elements(0), max_load_factor_value(1.0) {
     initialize_buckets(n);
   }
   ~hashtable() { clear(); }
@@ -223,8 +223,8 @@ public:
 
   // getter and setter for load factors
   float load_factor() const { return (float) num_of_elements/buckets.size(); }
-  float max_load_factor() const { return max_load_factor; }
-  void max_load_factor(float max_factor) { max_load_factor = max_factor; }
+  float max_load_factor() const { return max_load_factor_value; }
+  void max_load_factor(float max_factor) { max_load_factor_value = max_factor; }
 
   // modifiers for space
   void rehash(size_type n);
@@ -276,7 +276,7 @@ private:
   size_type bkt_num(const value_type& val, size_type bkt_size) const 
     { return bkt_num_key(get_key(val), bkt_size); }
   void resize(size_type num_of_element_hint) {
-    if (((float) num_of_elements / buckets.size()) > load_factor) {
+    if (((float) num_of_element_hint / buckets.size()) > max_load_factor_value) {
       // trigger resize
       bucket_type new_buckets(next_size(buckets.size()));
       
