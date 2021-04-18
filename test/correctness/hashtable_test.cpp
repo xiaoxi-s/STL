@@ -57,6 +57,27 @@ TEST(hashtable_int_string_test, insert_equal) {
   }
 }
 
+TEST(hashtable_int_string_test, empty_and_count) {
+  identity<int> id;
+  equal<int> eq;
+  sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>> 
+  ht(10, id, eq);
+  int a[] = {6, 4, 8, 5, 7, 2, 9, 1, 0, 3};
+  int n = 10;
+
+  EXPECT_TRUE(ht.empty());
+  // insert twice
+  for (int i = 0 ; i < n; ++i)
+    ht.insert_equal(std::to_string(a[i]));
+  for (int i = 0 ; i < n; ++i)
+    ht.insert_equal(std::to_string(a[i]));
+  EXPECT_FALSE(ht.empty());
+
+  for (int i = 0; i < n; ++i) {
+    EXPECT_TRUE(ht.count(a[i]) == 2);
+  }
+}
+
 TEST(hashtable_int_string_test, insert_unique) {
   identity<int> id;
   equal<int> eq;
@@ -186,7 +207,7 @@ TEST(hashtable_int_string_test, equal_range) {
 }
 
 TEST(hashtable_int_string_test, erase_given_key) {
-    identity<int> id;
+  identity<int> id;
   equal<int> eq;
   sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>> 
     ht(10, id, eq);
@@ -225,7 +246,7 @@ TEST(hashtable_int_string_test, erase_given_key) {
 }
 
 TEST(hashtable_int_string_test, erase_given_iterator) {
-    identity<int> id;
+  identity<int> id;
   equal<int> eq;
   sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>> 
     ht(10, id, eq);
@@ -318,6 +339,71 @@ TEST(hashtable_int_string_test, clear) {
 
   EXPECT_TRUE(ht.size() == 0);
   EXPECT_TRUE(ht.begin() == ht.end());
+}
+
+TEST(hashtable_int_string_test, rehash) {
+  identity<int> id;
+  equal<int> eq;
+  sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>> 
+    ht(10, id, eq);
+
+  EXPECT_TRUE(ht.bucket_count() == 53);
+  ht.rehash(10);
+  EXPECT_TRUE(ht.bucket_count() == 53);
+  ht.rehash(60);
+  EXPECT_TRUE(ht.bucket_count() == 60);
+
+  // test basic functionality  
+  int n = 20;
+  // insert 10 "10"s. 
+  for (int i = 0; i < n; ++i) {
+    // still the same key, but use 
+    // [] to insert
+    ht[i] = std::to_string(10);
+  }
+
+  // insert some other elements
+  for (int i = 20; i < 1000; ++i) {
+    ht[i] = std::to_string(i);
+  }
+  ht.clear();
+
+  EXPECT_TRUE(ht.size() == 0);
+  EXPECT_TRUE(ht.begin() == ht.end());
+
+}
+
+TEST(hashtable_int_string_test, reserve) {
+  identity<int> id;
+  equal<int> eq;
+  sup::hashtable<int, std::string, identity<int>, extract_key<std::string>, equal<int>> 
+    ht(10, id, eq);
+
+  EXPECT_TRUE(ht.bucket_count() == 53);
+  ht.reserve(10);
+  EXPECT_TRUE(ht.bucket_count() == 53);
+  ht.reserve(60);
+  // the next prime 
+  EXPECT_TRUE(ht.bucket_count() == 97);
+
+  // test basic functionality  
+  int n = 20;
+  // insert 10 "10"s. 
+  for (int i = 0; i < n; ++i) {
+    // still the same key, but use 
+    // [] to insert
+    ht[i] = std::to_string(10);
+  }
+
+  // insert some other elements
+  for (int i = 20; i < 1000; ++i) {
+    ht[i] = std::to_string(i);
+  }
+  ht.clear();
+
+  EXPECT_TRUE(ht.size() == 0);
+  EXPECT_TRUE(ht.begin() == ht.end());
+
 }
 
 }

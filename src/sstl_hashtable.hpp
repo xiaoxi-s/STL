@@ -125,12 +125,25 @@ public:
     :hash(hfc), equals(eq_k), get_key(ExtractKey()), num_of_elements(0), load_factor(1.0) {
     initialize_buckets(n);
   }
+  ~hashtable() { clear(); }
   
   /*************** Accessors ***************/
   size_type size() const { return num_of_elements; }
+  bool empty() const { return num_of_elements == 0; }
+  size_type count(const key_type& key) {
+    std::pair<iterator, iterator> tmp_range = equal_range(key);
+    size_type num = 0;
+    while (tmp_range.first != tmp_range.second) {
+      ++tmp_range.first;
+      ++num;
+    }
+    return num;
+  }
   size_type bucket_count() const { return buckets.size(); }
   size_type max_bucket_count() const 
     { return __hashtable_prime_list<unsigned long>::__get_prime_list()[sstl_num_of_primes-1]; }
+
+  // iterators
   iterator begin() { 
     if (num_of_elements == 0)
       return end();
@@ -159,12 +172,13 @@ public:
       return std::pair<iterator, iterator>(first, first);
     iterator last = first;
     ++last;
-    while (get_key(*last) == key) {
+    while (last != end() && get_key(*last) == key) {
       ++last;
     }
 
     return std::pair<iterator, iterator>(first, last);
   }
+
   // operator [] overloading
   value_type& operator[] (key_type key) {
     size_type bucket = bkt_num_key(key);
@@ -186,6 +200,11 @@ public:
     ++num_of_elements;
     return cur->val;
   }
+  
+  // traits
+  hasher hash_function() const { return hasher(); }
+  key_equal key_eq() const { return key_equal(); }
+  node_allocator get_allocator() const { return node_allocator(); }
 
   /*************** Modifiers ***************/
   iterator insert_equal(const value_type& val);
@@ -201,9 +220,16 @@ public:
   void erase(iterator first, iterator last);
 
   void clear();
+
   // getter and setter for load factors
   float max_load_factor() const { return load_factor; }
   void max_load_factor(float factor) { load_factor = factor; }
+
+  // modifiers for space
+  void rehash(size_type n);
+  void reserve(size_type n);
+
+  // assignment operator overloading
   hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>&
     operator= (hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>& table);
 
@@ -625,6 +651,73 @@ void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::clear() {
     }
 
     num_of_elements = 0;
+  }
+}
+
+/**
+ * @brief have n buckets. If the hash table already has 
+ *  more than n buckets, the function has no effect.
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @param n - the given size of the buckets
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::rehash(size_type n) {
+  if (n > buckets.size()) {
+    bucket_type new_buckets(n);
+      size_type bucket = 0;
+      while (bucket < buckets.size()) {
+        node* cur = buckets[bucket];
+        while (cur != nullptr) {
+          node* tmp = cur;
+          cur = cur->next;
+          insert_into_new_bucket(tmp, new_buckets);
+        }
+        buckets[bucket] = nullptr;
+        ++bucket;
+      }
+      buckets.swap(new_buckets);
+      new_buckets.clear();
+  }
+}
+
+/**
+ * @brief reserve space for n elements.The bucket size would be
+ *  next_size(n) If the hash table already has more than 
+ *  next_size(n) buckets, the function has no effect.
+ * 
+ * @tparam Key - of the hashtable
+ * @tparam Value - of the hashtable
+ * @tparam HashFunc - of the hashtable
+ * @tparam ExtractKey - extract key from the value of Value type
+ * @tparam EqualKey - determine whether two keys are equal
+ * @tparam Alloc - allocator type
+ * @param n - the given number of the elements
+ */
+template <class Key, class Value, class HashFunc, 
+          class ExtractKey, class EqualKey, class Alloc>
+void hashtable<Key, Value, HashFunc, ExtractKey, EqualKey, Alloc>::reserve(size_type n) {
+  if (next_size(n) > buckets.size()) {
+    bucket_type new_buckets(next_size(n));
+      size_type bucket = 0;
+      while (bucket < buckets.size()) {
+        node* cur = buckets[bucket];
+        while (cur != nullptr) {
+          node* tmp = cur;
+          cur = cur->next;
+          insert_into_new_bucket(tmp, new_buckets);
+        }
+        buckets[bucket] = nullptr;
+        ++bucket;
+      }
+      buckets.swap(new_buckets);
+      new_buckets.clear();
   }
 }
 
