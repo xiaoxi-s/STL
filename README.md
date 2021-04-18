@@ -31,7 +31,9 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `forward_list`: finished
  - `rb_tree`: finished
  - `set`: finished
- - `map`: on-going
+ - `map`: finished
+ - `unordered_set`: finished
+ - `unordered_map`: on-going
 
 ## Next Step
 
@@ -52,7 +54,9 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `forward_list`: finished
  - `rb_tree`: finished
  - `set`: finished
- - `map`: on-going
+ - `map`: finished
+ - `unordered_set`: finished
+ - `unordered_map`: on-going
 
 ### Algorithms
 - `uninitialized`: finished
@@ -153,3 +157,10 @@ This part records the standard libraries that are not currently implemented, whi
   - Functions:
     - `std::make_pair`
     - `std::less`
+    - `std::binary_function`
+- `sstl_hashtable.hpp`
+  - Source:
+    - `algorithm` use std::upper_bound
+    - `utility` use std::make_pair
+  - Functions:
+    - `std::make_pair`
