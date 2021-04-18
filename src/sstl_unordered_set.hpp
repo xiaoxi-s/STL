@@ -1,5 +1,5 @@
-#ifndef _SSTL_HASH_SET_H
-#define _SSTL_HASH_SET_H
+#ifndef _SSTL_UNORDERED_SET_H
+#define _SSTL_UNORDERED_SET_H
 
 #include <functional>
 

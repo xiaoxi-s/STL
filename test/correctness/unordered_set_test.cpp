@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include "../../src/sstl_hash_set.hpp"
-
+#include "../../src/sstl_unordered_set.hpp"
 
 namespace unordered_set_string_test {
 
