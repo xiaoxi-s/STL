@@ -33,7 +33,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `set`: finished
  - `map`: finished
  - `unordered_set`: finished
- - `unordered_map`: on-going
+ - `unordered_map`: finished
 
 ## Next Step
 
@@ -56,7 +56,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `set`: finished
  - `map`: finished
  - `unordered_set`: finished
- - `unordered_map`: on-going
+ - `unordered_map`: finished
 
 ### Algorithms
 - `uninitialized`: finished
@@ -163,4 +163,20 @@ This part records the standard libraries that are not currently implemented, whi
     - `algorithm` use std::upper_bound
     - `utility` use std::make_pair
   - Functions:
+    - None
+- `sstl_unordered_set.hpp`
+  - Source: 
+    - `functional`
+  - Functions:
     - `std::make_pair`
+    - `std::hash<T>`
+    - `std::equal_to<T>`
+    - `std::_Identity<Key>`
+- `sstl_unordered_map.hpp`
+  - Source: 
+    - `functional`
+  - Functions:
+    - `std::make_pair`
+    - `std::hash<T>`
+    - `std::equal_to<T>`
+    - `std::_Select1st<std::pair<T1, T2>>`
