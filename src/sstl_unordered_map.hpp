@@ -24,7 +24,7 @@ public:
   typedef typename container_type::size_type size_type;
   typedef typename container_type::difference_type difference_type;
 
-  // allowed to modify key
+  // allowed to modify Value
   typedef typename container_type::pointer pointer;
   typedef typename container_type::const_pointer const_pointer;
   typedef typename container_type::reference reference;
