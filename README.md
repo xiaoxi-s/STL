@@ -38,6 +38,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 ## Next Step
 
 - Implement part of STL algorithms including: sort, lower_bound, upper_bound, set operations 
+- Use valgrind for memory analysis
 
 ## Test
 
