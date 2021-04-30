@@ -37,7 +37,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 
 ## Next Step
 
-- Study associative containers.
+- Implement part of STL algorithms including: sort, lower_bound, upper_bound, set operations 
 
 ## Test
 
