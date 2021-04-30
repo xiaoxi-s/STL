@@ -68,7 +68,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 ## Considerations
 
  - Multi-threading is not considered. 
- - Alignment issues are not considered.
+ - Alignment issues are not considered as the allocator is just a wrapper for new and delete.
  - The source uses some standard libraries (listed below) for brevity. 
 
 ### Standard Libraries used
