@@ -162,7 +162,6 @@ TEST(rb_tree_int_str_test, insert_unique_range_and_size) {
   for (int i = 0; i < n; ++i, ++it) {
     EXPECT_TRUE((*it).first == i);
   }
-  printf("%ld\n", t.size());
   EXPECT_TRUE(t.size() == 10); // the size should be only 10
 }
 

@@ -266,7 +266,6 @@ TEST(list_int_test, merge_with_comparator) {
 
   sup::list<int>::iterator it = l1.begin();
   for(int i = 24; i >= 20; ++it, --i) {
-    printf("%d %d",*it, i);
     EXPECT_TRUE(*it == i);
   }
 

@@ -254,7 +254,6 @@ TEST(vector_int_test, insert_multiple_no_capacity_insert_at_start) {
   sup::vector<int> vec(10);
 
   vec.insert(vec.begin(), 3, 4);  // insert 3 4s at the start
-  std::cout << vec.size() << std::endl;
   EXPECT_TRUE(vec.size() == 10 + 3);
   for (int i = 0; i < 3; ++i) {
     EXPECT_TRUE(vec[i] == 4);
@@ -349,7 +348,6 @@ TEST(vector_int_test, insert_range_no_capacity_insert_at_start) {
   int array[] = {1, 2, 3};
 
   vec.insert(vec.begin(), array, array + 3);  // insert array elements at start
-  std::cout << vec.size() << std::endl;
   EXPECT_TRUE(vec.size() == 10 + 3);
 
   for (int i = 0; i < 3; ++i) {
