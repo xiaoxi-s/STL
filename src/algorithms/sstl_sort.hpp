@@ -2,7 +2,7 @@
 #define _SSTL_SORT_H
 
 #include "sstl_heap.hpp"
-#include <algorithm>
+
 namespace sup {
 
 // partial sort
