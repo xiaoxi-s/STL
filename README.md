@@ -8,16 +8,15 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 - Build: gcc 9.3.0 + CMake 3.16.3
 - Editor: VSCode
 
-
 ## Takeaways
  - traits methods
  - division of trivial & non-trivial objects for performance
  - quick sort for list
  - the range specification [first, last) has many advantages
 
-
 ## Core Sources Implementation
 ### Utily Functions
+ - Datastructures finished
  - Allocators finished
  - Memory initialization library finished
 
@@ -41,6 +40,9 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 - Use valgrind for memory analysis
 
 ## Test
+
+### Valgrind
+Valgrind memcheck test Passed.
 
 ### Utilities
 - `allocator`: Now use naive allocator (a wrapper for new and delete)
