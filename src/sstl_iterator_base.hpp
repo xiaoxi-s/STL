@@ -96,7 +96,7 @@ inline typename iterator_traits<Iterator>::difference_type* distance_type(
 }
 
 template <class Iterator>
-inline typename iterator_traits<Iterator>::value_types* value_type(
+inline typename iterator_traits<Iterator>::value_type* value_type(
     const Iterator&) {
   return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
 }
