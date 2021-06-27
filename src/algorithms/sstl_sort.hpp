@@ -24,7 +24,6 @@ template <class RandomAccessIterator>
 inline void partial_sort(RandomAccessIterator first, 
                          RandomAccessIterator middle, 
                          RandomAccessIterator last) {
-  //std::partial_sort(first, middle, last);
   _partial_sort(first, middle, last, value_type(first));
 }
 
