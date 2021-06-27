@@ -16,8 +16,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 
 ## Core Sources Implementation
 ### Utily Functions
- - Datastructures finished
- - Allocators finished
+ - Allocators finished (now using `new` and `delete`)
  - Memory initialization library finished
 
 ### Data Structures
@@ -34,10 +33,14 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
  - `unordered_set`: finished
  - `unordered_map`: finished
 
+### Algorithms
+- `set_operations`: finished
+- `binary_operations`: finished
+- `heap`: finished
+
 ## Next Step
 
 - Implement part of STL algorithms including: sort, lower_bound, upper_bound, set operations 
-- Use valgrind for memory analysis
 
 ## Test
 
@@ -56,7 +59,8 @@ valgrind --leak-check=full ./test/correctness/STL_CORRECTNESS_TESTS
 ```
 
 ### Utilities
-- `allocator`: Now use naive allocator (a wrapper for new and delete)
+ - Allocators finished
+ - Memory initialization library finished
 
 ### Data Structures
 - `vector`: finished
@@ -73,9 +77,8 @@ valgrind --leak-check=full ./test/correctness/STL_CORRECTNESS_TESTS
  - `unordered_map`: finished
 
 ### Algorithms
-- `uninitialized`: finished
-- `iterator`: finished
-- `construct`: finished
+- `set_operations`: finished
+- `binary_operations`: finished
 - `heap`: finished
 
 ## Considerations
