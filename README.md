@@ -42,7 +42,18 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 ## Test
 
 ### Valgrind
-Valgrind memcheck test Passed.
+Valgrind memcheck test Passed. The detailed process is as follows: First, build the project, 
+
+```shell
+mkdir build
+cd build
+cmake ..
+```
+Then, find the executable in `build/test/correctness/STL_CORRECTNESS_TESTS`. With valgrind installed (using `sudo apt install valgrind`), run the following command in shell,
+
+```shell
+valgrind --leak-check=full ./test/correctness/STL_CORRECTNESS_TESTS
+```
 
 ### Utilities
 - `allocator`: Now use naive allocator (a wrapper for new and delete)
