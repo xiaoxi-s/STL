@@ -197,3 +197,13 @@ This part records the standard libraries that are not currently implemented, whi
     - `std::hash<T>`
     - `std::equal_to<T>`
     - `std::_Select1st<std::pair<T1, T2>>`
+- `sstl_binary_operations.hpp`
+  - Source: None
+  - Functions: None
+- `sstl_heap.hpp`
+  - Source: None
+  - Functions:
+    - `std::swap`
+- `sstl_set_operations.hpp`
+  - Source: None
+  - Functions: `std::copy`
