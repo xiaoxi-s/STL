@@ -8,13 +8,20 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 - Build: gcc 9.3.0 + CMake 3.16.3
 - Editor: VSCode
 
-## Takeaways
+### Considerations
+ - Multi-threading is not considered. 
+ - Alignment issues are not considered as the allocator is just a wrapper for new and delete.
+ - The source uses some standard libraries (listed below) for brevity. 
+
+### Takeaways
  - traits methods
  - division of trivial & non-trivial objects for performance
- - quick sort for list
+ - quick sort for list (although merge sort appears to be simpler)
  - the range specification [first, last) has many advantages
+ - intro sort: best O(n), worst O(nlogn)
 
 ## Core Sources Implementation
+
 ### Utily Functions
  - Allocators finished (now using `new` and `delete`)
  - Memory initialization library finished
@@ -38,10 +45,6 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 - `binary_operations`: finished
 - `heap`: finished
 
-## Next Step
-
-- Implement part of STL algorithms including: sort, lower_bound, upper_bound, set operations 
-
 ## Test
 
 ### Valgrind
@@ -58,11 +61,11 @@ Then, find the executable in `build/test/correctness/STL_CORRECTNESS_TESTS`. Wit
 valgrind --leak-check=full ./test/correctness/STL_CORRECTNESS_TESTS
 ```
 
-### Utilities
+### Utilities Tests
  - Allocators finished
  - Memory initialization library finished
 
-### Data Structures
+### Data Structures Tests
 - `vector`: finished
 - `list`: finished
  - `deque`: finished
@@ -76,20 +79,18 @@ valgrind --leak-check=full ./test/correctness/STL_CORRECTNESS_TESTS
  - `unordered_set`: finished
  - `unordered_map`: finished
 
-### Algorithms
+### Algorithms Tests
 - `set_operations`: finished
 - `binary_operations`: finished
 - `heap`: finished
 
-## Considerations
+## Next Step
 
- - Multi-threading is not considered. 
- - Alignment issues are not considered as the allocator is just a wrapper for new and delete.
- - The source uses some standard libraries (listed below) for brevity. 
+No intention of implementing performance test...
 
 ### Standard Libraries used
 
-This part records the standard libraries that are not currently implemented, while have to be used. 
+This part records the standard libraries that are necessary. 
 
 - `sstl_allocator_base.hpp` and `sstl_allocator.hpp`
   - Source: 
@@ -207,3 +208,8 @@ This part records the standard libraries that are not currently implemented, whi
 - `sstl_set_operations.hpp`
   - Source: None
   - Functions: `std::copy`
+- `sstl_sort.hpp`
+  - Source: None
+  - Functions: 
+    - `std::copy_backward`
+    - `std::iter_swap`
