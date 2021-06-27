@@ -5,8 +5,6 @@
 
 #include "../../src/algorithms/sstl_sort.hpp"
 
-
-
 namespace algorithm_sort_test {
 TEST(sort_test, sort_test) {
   int n = 10;
