@@ -22,7 +22,7 @@ Implement basic algorithm, adaptor, container, iterator, functors in STL that ar
 
 ## Core Sources Implementation
 
-### Utily Functions
+### Utility Functions
  - Allocators finished (now using `new` and `delete`)
  - Memory initialization library finished
 
